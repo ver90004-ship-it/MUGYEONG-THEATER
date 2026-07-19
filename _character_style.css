@@ -1,0 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kaushan+Script&display=swap');
+
+:root{
+  --archive-red: #a4231f;
+  --archive-red-2: #7a1a17;
+  --kraft: #d5cbba;
+  --kraft-2: #c4b9a6;
+  --kraft-3: #b0a48f;
+}
+
+/* ==== character detail — single dossier page ==== */
+.chwrap{ max-width:860px; margin:0 auto; padding:60px 44px 0; }
+@media (max-width:960px){ .chwrap{ padding:40px 12px 0; } }
+
+.chback{ font-family:'Cinzel', serif; font-size:11px; letter-spacing:.24em; color:var(--ink-6); text-transform:uppercase; display:inline-block; margin-bottom:36px; }
+.chback:hover{ color:var(--paper); }
+
+/* ============ DOSSIER WRAPPER ============ */
+.dossier-row{
+  position:relative;
+}
+
+/* ============ PAPER ============ */
+.paper{
+  position:relative; background:var(--kraft); color:var(--ink);
+  padding:56px 56px 64px; box-shadow: 0 4px 60px rgba(0,0,0,.6);
+  border:1px solid var(--kraft-3);
+}
+
+/* paper grain */
+.paper::before{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; z-index:1;
+  background-image:
+    radial-gradient(circle, rgba(0,0,0,.3) .5px, transparent 1px),
+    repeating-linear-gradient(115deg, rgba(0,0,0,.06) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(25deg, rgba(0,0,0,.04) 0 1px, transparent 1px 6px);
+  background-size:3px 3px, auto, auto;
+}
+
+/* coffee stain */
+.paper::after{
+  content:""; position:absolute; bottom:60px; right:40px; width:90px; height:90px; border-radius:50%;
+  background: radial-gradient(ellipse, transparent 48%, rgba(120,80,30,.08) 52%, rgba(120,80,30,.04) 70%, transparent 74%);
+  z-index:1; pointer-events:none;
+}
+
+/* ARCHIVE TAB */
+.paper .archtab{
+  position:absolute; top:56px; left:-1px; z-index:7; transform:translateX(-100%);
+  background:var(--ink); color:var(--paper); padding:16px 8px;
+  font-family:'Cinzel', serif; font-size:9px; letter-spacing:.22em; text-transform:uppercase; text-align:center; line-height:1.7;
+  writing-mode:vertical-rl; box-shadow: -2px 0 10px rgba(0,0,0,.4);
+}
+
+/* clip */
+.paper .clip{
+  position:absolute; top:-14px; left:44px; width:32px; height:72px; z-index:6;
+  border:2px solid var(--ink-3); border-radius:16px 16px 0 0; border-bottom:none;
+  background:linear-gradient(180deg, rgba(120,120,120,.1), rgba(0,0,0,.12));
+}
+
+/* classified stamp */
+.paper .stamp-cls{
+  position:absolute; top:36px; right:48px; z-index:5;
+  border:3px solid var(--archive-red); padding:8px 14px; transform:rotate(-4deg);
+  font-family:'Cinzel', serif; font-size:9px; letter-spacing:.28em; color:var(--archive-red); text-transform:uppercase;
+  background:rgba(213,203,186,.4);
+}
+.paper .stamp-cls b{ display:block; font-size:13px; letter-spacing:.32em; margin-top:2px; font-weight:700; }
+
+/* ---- DOSS HEADER ---- */
+.paper .doss-head{ position:relative; z-index:2; margin-top:16px; padding-right:220px; }
+
+.paper .kicker-p{
+  font-family:'Cinzel', serif; font-size:10px; letter-spacing:.32em; color:var(--ink-4); text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:12px;
+}
+.paper .kicker-p::before{ content:""; width:28px; height:1px; background:var(--ink-4); }
+
+.paper h1{
+  font-family:'Bebas Neue', 'Cinzel', serif; font-weight:400; font-size:clamp(60px,10vw,120px);
+  line-height:.88; margin:10px 0 6px; color:var(--ink); letter-spacing:.02em;
+}
+.paper .doss-head .en{
+  font-family:'Cinzel', serif; font-size:11px; letter-spacing:.36em; color:var(--ink-4); text-transform:uppercase; margin-top:4px;
+}
+.paper .doss-head .roleline{
+  display:inline-block; font-family:'Special Elite','Courier Prime', monospace; font-size:14px; color:var(--ink-2);
+  margin-top:18px; letter-spacing:.03em; position:relative; padding-bottom:5px;
+}
+.paper .doss-head .roleline::after{
+  content:""; position:absolute; left:-4px; right:-4px; bottom:0; height:4px;
+  background:var(--archive-red); opacity:.28; transform:skewX(-6deg);
+}
+
+/* handwritten margin note */
+.paper .marginnote{
+  font-family:'Kaushan Script', cursive; font-size:15px; color:var(--archive-red-2);
+  margin:16px 0 0; transform:rotate(-1.2deg); opacity:.8; position:relative; z-index:2;
+}
+
+.paper .divline{ height:1px; background:var(--ink); opacity:.35; margin:28px 0 22px; position:relative; z-index:2; }
+.paper .divline.d{ background: repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 8px); opacity:.35; }
+
+/* ---- INFORMATION TABLE ---- */
+.paper .section-title{
+  font-family:'Cinzel', serif; font-size:13px; letter-spacing:.36em; color:var(--ink); text-transform:uppercase; font-weight:600;
+  margin:0 0 16px; position:relative; z-index:2; display:flex; align-items:center; gap:12px;
+}
+.paper .section-title::before{ content:""; width:7px; height:7px; background:var(--archive-red); flex-shrink:0; }
+.paper .section-title::after{ content:""; flex:1; height:1px; background:var(--ink); opacity:.28; }
+
+.paper .infotable{ width:100%; border-collapse:collapse; position:relative; z-index:2; }
+.paper .infotable th{
+  text-align:left; padding:10px 14px 10px 0; font-family:'Cinzel', serif; font-size:10px; letter-spacing:.22em;
+  color:var(--ink-3); text-transform:uppercase; font-weight:500; width:120px; vertical-align:top;
+  border-bottom:1px solid rgba(10,10,10,.15);
+}
+.paper .infotable td{
+  padding:10px 0; font-family:'Special Elite','Courier Prime', monospace; font-size:14px;
+  color:var(--ink); border-bottom:1px solid rgba(10,10,10,.15);
+}
+.paper .infotable td .redact{ background:var(--ink); color:var(--ink); padding:0 8px; user-select:none; border-radius:1px; }
+
+/* ---- BIO ---- */
+.paper .biosection{ margin-top:32px; position:relative; z-index:2; }
+.paper .biosection p{ font-family:'Nanum Myeongjo', 'Noto Serif KR', serif; font-size:15.5px; line-height:1.9; color:var(--ink); margin:0 0 16px; }
+.paper .biosection p.lede{ font-family:'Noto Serif KR', 'Nanum Myeongjo', serif; font-size:18px; line-height:1.65; font-style:normal; font-weight:600; }
+.paper .biosection .redact{ background:var(--ink); color:var(--ink); padding:0 8px; user-select:none; }
+
+/* ---- SIGNATURE ---- */
+.paper .signature{
+  margin-top:40px; padding-top:18px; border-top:1px dashed rgba(10,10,10,.25); position:relative; z-index:2;
+  display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
+}
+.paper .signature .sigblock{ text-align:right; }
+.paper .signature .sigblock .sigline{ font-family:'Kaushan Script', cursive; font-size:30px; color:var(--ink); line-height:1; }
+.paper .signature .sigblock .sigcap{ font-family:'Cinzel', serif; font-size:9px; letter-spacing:.32em; color:var(--ink-4); text-transform:uppercase; margin-top:8px; }
+.paper .signature .fingerprint{
+  width:46px; height:58px; opacity:.2;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 40%, var(--ink) 41%, transparent 42%),
+    radial-gradient(ellipse at 50% 50%, transparent 30%, var(--ink) 31%, transparent 32%),
+    radial-gradient(ellipse at 50% 50%, transparent 20%, var(--ink) 21%, transparent 22%),
+    radial-gradient(ellipse at 50% 50%, transparent 10%, var(--ink) 11%, transparent 12%);
+}
+
+/* ============ PORTRAIT — pinned photo on paper (desktop) ============ */
+.chportrait{
+  position:absolute; top:44px; right:48px; z-index:10;
+  width:260px; aspect-ratio:3/4; overflow:hidden;
+  background:#0a0a0a; box-shadow: 3px 4px 18px rgba(0,0,0,.5);
+  border:6px solid var(--paper); transform:rotate(1.5deg);
+}
+
+.chportrait .pbg{
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, #181818 0%, #050505 100%);
+}
+.chportrait .pimg{
+  position:absolute; inset:0; background-size:cover; background-position:center 8%; background-repeat:no-repeat;
+  filter:grayscale(1) contrast(1.1);
+}
+.chportrait .pimg::after{
+  content:""; position:absolute; inset:0; background: linear-gradient(180deg, transparent 60%, rgba(5,5,5,.85));
+}
+.chportrait .pscan{ position:absolute; inset:0; mix-blend-mode:overlay; opacity:.12; background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.12) 0 1px, transparent 1px 3px); pointer-events:none; }
+.chportrait .phalftone{ position:absolute; inset:0; opacity:.08; background-image:radial-gradient(circle, rgba(255,255,255,.5) 1px, transparent 1.5px); background-size:3px 3px; pointer-events:none; }
+
+/* hide redundant labels */
+.chportrait .pcornerframe,
+.chportrait .filestamp,
+.chportrait .verttext,
+.chportrait .stubname{ display:none; }
+
+/* ============ BELOW PAPER ============ */
+.chextras{
+  margin:48px 0 36px; display:grid; grid-template-columns: repeat(3,1fr); gap:0;
+  border:1px solid rgba(242,239,230,.12); position:relative;
+}
+.chextras > div{ padding:28px 24px 28px 32px; border-right:1px solid rgba(242,239,230,.08); position:relative; }
+.chextras > div:last-child{ border-right:none; }
+.chextras > div::before{ content:"▪"; position:absolute; left:14px; top:30px; color:var(--archive-red); font-size:11px; }
+.chextras h5{ font-family:'Cinzel', serif; font-size:10px; letter-spacing:.32em; color:var(--paper-3); text-transform:uppercase; margin:0 0 12px; }
+.chextras p{ font-family:'Noto Serif KR', 'Nanum Myeongjo', serif; font-size:17px; line-height:1.4; color:var(--paper); margin:0; }
+.chextras .redact{ background:var(--paper); color:var(--paper); padding:0 8px; user-select:none; }
+
+/* pull quote */
+.chquote{ padding:80px 36px 100px; text-align:center; border-top:1px solid rgba(242,239,230,.1); position:relative; }
+.chquote::after{ content:""; position:absolute; left:50%; width:50px; height:2px; background:var(--archive-red); opacity:.5; transform:translateX(-50%); bottom:48px; }
+.chquote .qmark{ font-family:'Playfair Display', serif; font-size:72px; line-height:.5; color:var(--archive-red); opacity:.6; font-style:italic; }
+.chquote p{ font-family:'Bebas Neue', sans-serif; font-size:clamp(26px,4vw,48px); letter-spacing:.015em; color:var(--paper); margin:20px 0 0; line-height:1.15; }
+.chquote cite{ display:block; margin-top:22px; font-family:'Cinzel', serif; font-style:normal; font-size:10px; letter-spacing:.32em; color:var(--paper-3); text-transform:uppercase; }
+
+/* related case */
+.chback-case{ border-top:1px solid rgba(242,239,230,.1); padding:40px 0 20px; margin-top:16px; }
+.chback-case .head{ display:flex; justify-content:space-between; gap:16px; padding-bottom:18px; border-bottom:1px solid rgba(242,239,230,.08); }
+.chback-case h3{ font-family:'Playfair Display', serif; font-size:28px; margin:8px 0 0; color:var(--paper); font-weight:500; }
+.chback-case .sm{ font-family:'Cinzel', serif; font-size:11px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; }
+.chbacklink{ display:grid; grid-template-columns:60px 180px 1fr 120px; gap:20px; align-items:center; padding:22px 4px; border-bottom:1px solid rgba(242,239,230,.06); transition:.2s; }
+.chbacklink:hover{ background:rgba(242,239,230,.03); }
+.chbacklink .n{ font-family:'Playfair Display', serif; font-size:30px; color:var(--ink-5); }
+.chbacklink:hover .n{ color:var(--paper); }
+.chbacklink .c{ font-family:'Cinzel', serif; font-size:10px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; }
+.chbacklink .t{ font-family:'Playfair Display', serif; font-size:24px; color:var(--paper); }
+.chbacklink .g{ font-family:'Cinzel', serif; font-size:10px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; text-align:right; }
+.chbacklink:hover .g{ color:var(--paper); }
+
+/* ============================================================
+   MOBILE / TABLET (≤960px)
+   — portrait moves INSIDE paper as inline element
+   ============================================================ */
+@media (max-width:960px){
+  .chwrap{ padding:24px 10px 0; }
+  .chback{ margin-bottom:20px; font-size:10px; }
+
+  /* paper */
+  .paper{ padding:28px 20px 40px; }
+
+  /* hide side tab & clip on mobile */
+  .paper .archtab,
+  .paper .clip{ display:none; }
+
+  /* stamp — absolute 유지, 크기만 줄임 */
+  .paper .stamp-cls{
+    font-size:8px; padding:6px 10px; border-width:2px;
+    top:20px; right:16px;
+  }
+  .paper .stamp-cls b{ font-size:11px; }
+
+  /* portrait: paper 상단 기준 absolute, 이름 옆 */
+  .paper .chportrait{
+    position:absolute; top:20px; right:16px;
+    width:150px; margin:0; transform:rotate(1deg);
+    z-index:2;
+  }
+
+  /* stamp가 portrait 뒤로 들어가도록 z-index 조정 */
+  .paper .stamp-cls{ z-index:1; }
+
+  /* 이름 영역: portrait 너비만큼 오른쪽 여백 */
+  .paper .doss-head{ padding-right:170px; margin-top:8px; }
+
+  /* heading */
+  .paper h1{ font-size:clamp(40px,12vw,64px); }
+  .paper .doss-head .en{ font-size:10px; letter-spacing:.28em; }
+  .paper .doss-head .roleline{ font-size:13px; margin-top:14px; }
+
+  /* margin note */
+  .paper .marginnote{ font-size:13px; margin:12px 0 0; }
+
+  /* dividers */
+  .paper .divline{ margin:20px 0 16px; }
+
+  /* info table */
+  .paper .infotable th{ font-size:9px; width:90px; padding:8px 10px 8px 0; letter-spacing:.18em; }
+  .paper .infotable td{ font-size:13px; padding:8px 0; }
+
+  /* bio */
+  .paper .biosection p{ font-size:14px; line-height:1.8; margin:0 0 12px; }
+  .paper .biosection p.lede{ font-size:15.5px; line-height:1.6; }
+
+  /* signature */
+  .paper .signature .sigline{ font-size:24px; }
+
+  /* extras */
+  .chextras{ grid-template-columns:1fr; margin:32px 0 24px; }
+  .chextras > div{ padding:20px 20px 20px 28px; }
+  .chextras p{ font-size:15px; }
+
+  /* quote */
+  .chquote{ padding:50px 20px 60px; }
+  .chquote .qmark{ font-size:52px; }
+  .chquote p{ font-size:clamp(22px,5vw,36px); }
+
+  /* case back */
+  .chbacklink{ grid-template-columns:40px 1fr; gap:12px; padding:16px 0; }
+  .chbacklink .n{ font-size:22px; }
+  .chbacklink .c, .chbacklink .g{ grid-column:2; }
+  .chbacklink .t{ grid-column:2; font-size:18px; }
+  .chbacklink .g{ text-align:left; }
+}
+
+/* small phones */
+@media (max-width:420px){
+  .paper{ padding:24px 14px 32px; }
+  .paper h1{ font-size:clamp(36px,14vw,56px); }
+  .paper .chportrait{ width:120px; right:14px; top:20px; }
+  .paper .stamp-cls{ right:14px; top:20px; display:none; }
+  .paper .doss-head{ padding-right:136px; }
+  .paper .infotable th{ width:72px; font-size:8px; }
+  .paper .infotable td{ font-size:12px; }
+}

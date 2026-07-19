@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen · 상영관 — MUGYEONG THEATER</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .screen-wrap{
+    max-width:1000px; margin:0 auto; padding:80px 40px 40px;
+  }
+  @media(max-width:760px){ .screen-wrap{ padding:60px 16px 20px; } }
+
+  /* 상영관 헤더 */
+  .screen-hero{
+    text-align:center; margin-bottom:64px;
+  }
+  .screen-hero .sh-kicker{
+    font-family:'Cinzel', serif; font-size:11px; letter-spacing:.4em; color:var(--ink-5);
+    text-transform:uppercase; margin-bottom:16px;
+  }
+  .screen-hero h1{
+    font-family:'Playfair Display', 'Nanum Myeongjo', serif; font-size:clamp(36px,6vw,64px);
+    color:var(--paper); font-weight:500; margin:0 0 12px; letter-spacing:.02em;
+  }
+  .screen-hero .sh-sub{
+    font-family:'Cinzel', serif; font-size:12px; letter-spacing:.3em; color:var(--ink-6);
+    text-transform:uppercase;
+  }
+
+  /* 스크린 카드 — 영화관 스크린 느낌 */
+  .screen-card{
+    position:relative; margin-bottom:56px;
+    background:#0a0a0a; border:1px solid rgba(242,239,230,.08);
+    padding:0;
+  }
+  .screen-card .sc-top{
+    padding:20px 28px; border-bottom:1px solid rgba(242,239,230,.06);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .screen-card .sc-top .sc-num{
+    font-family:'Cinzel', serif; font-size:10px; letter-spacing:.3em; color:var(--ink-5);
+    text-transform:uppercase;
+  }
+  .screen-card .sc-top .sc-badge{
+    font-family:'Cinzel', serif; font-size:9px; letter-spacing:.25em; color:var(--ink-6);
+    border:1px solid rgba(242,239,230,.12); padding:4px 10px; text-transform:uppercase;
+  }
+
+  /* 비디오 영역 — 영화관 스크린 */
+  .screen-card .sc-screen{
+    position:relative; width:100%; aspect-ratio:16/9; background:#000;
+    overflow:hidden;
+  }
+  .screen-card .sc-screen iframe{
+    position:absolute; inset:0; width:100%; height:100%; border:none;
+  }
+
+  /* 커튼 그라디언트 양 옆 */
+  .screen-card .sc-screen::before,
+  .screen-card .sc-screen::after{
+    content:""; position:absolute; top:0; bottom:0; width:24px; z-index:2; pointer-events:none;
+  }
+  .screen-card .sc-screen::before{
+    left:0; background:linear-gradient(90deg, rgba(5,5,5,.7), transparent);
+  }
+  .screen-card .sc-screen::after{
+    right:0; background:linear-gradient(-90deg, rgba(5,5,5,.7), transparent);
+  }
+
+  /* 하단 정보 */
+  .screen-card .sc-info{
+    padding:24px 28px; display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+    border-top:1px solid rgba(242,239,230,.06);
+  }
+  .screen-card .sc-info .sc-title{
+    font-family:'Playfair Display', 'Nanum Myeongjo', serif;
+    font-size:22px; color:var(--paper); font-weight:500; margin:0 0 6px;
+  }
+  .screen-card .sc-info .sc-desc{
+    font-family:'Noto Serif KR', serif; font-size:13px; color:var(--ink-5); line-height:1.6;
+  }
+  .screen-card .sc-info .sc-tag{
+    font-family:'Cinzel', serif; font-size:9px; letter-spacing:.28em; color:var(--ink-6);
+    text-transform:uppercase; white-space:nowrap;
+  }
+
+  @media(max-width:760px){
+    .screen-card .sc-top{ padding:14px 16px; }
+    .screen-card .sc-info{ padding:16px 16px; flex-direction:column; align-items:flex-start; }
+    .screen-card .sc-info .sc-title{ font-size:18px; }
+  }
+
+  /* 하단 안내 */
+  .screen-notice{
+    text-align:center; padding:40px 0 60px;
+    font-family:'Cinzel', serif; font-size:10px; letter-spacing:.28em; color:var(--ink-6);
+    text-transform:uppercase; border-top:1px solid rgba(242,239,230,.06);
+  }
+</style>
+</head>
+<body>
+  <header class="gnav">
+    <div class="gnav-inner">
+      <div class="brand-l">
+        <a href="index.html" class="mark">MUGYEONG</a>
+        <span class="sub">Theater · 無境上映館</span>
+      </div>
+      <div class="cnum">Screen · 상영관</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="case-files.html">Films</a>
+        <a href="worldview.html">World</a>
+        <a href="map.html">Map</a>
+        <a href="gallery.html">Stills</a>
+        <a href="screen.html" class="active">Screen</a>
+      </nav>
+    </div>
+    <div class="marquee-dots"></div>
+  </header>
+
+  <div class="screen-wrap">
+
+    <div class="screen-hero">
+      <div class="sh-kicker">◆ &nbsp; Screening Room &nbsp; ◆</div>
+      <h1>상영관</h1>
+      <div class="sh-sub">Mugyeong Original Song · #OriginalSong</div>
+    </div>
+
+    <!-- SCREEN 1 -->
+    <div class="screen-card">
+      <div class="sc-top">
+        <div class="sc-num">Screen 01</div>
+        <div class="sc-badge">Now Showing</div>
+      </div>
+      <div class="sc-screen">
+        <iframe src="https://www.youtube.com/embed/-fQnEtuyqoU" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="sc-info">
+        <div>
+          <div class="sc-title">무경시 Original Song #1</div>
+          <div class="sc-desc">재난은 끝나지 않았다. 그 날의 기록을, 우리가 기억한다.</div>
+        </div>
+        <div class="sc-tag">MG-OST-001</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2 -->
+    <div class="screen-card">
+      <div class="sc-top">
+        <div class="sc-num">Screen 02</div>
+        <div class="sc-badge">Now Showing</div>
+      </div>
+      <div class="sc-screen">
+        <iframe src="https://www.youtube.com/embed/RB1xmN-2sEg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="sc-info">
+        <div>
+          <div class="sc-title">무경시 Original Song #2</div>
+          <div class="sc-desc">우리는 기록한다. 우리는 지킨다. 우리는 끝까지 남는다.</div>
+        </div>
+        <div class="sc-tag">MG-OST-002</div>
+      </div>
+    </div>
+
+    <div class="screen-notice">
+      ◆ This screening does not guarantee survival ◆
+    </div>
+
+  </div>
+
+  <footer class="site">
+    <div class="dots"></div>
+    <b>MUGYEONG THEATER</b> · Screen · 상영관
+  </footer>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>

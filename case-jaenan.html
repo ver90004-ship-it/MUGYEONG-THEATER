@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Film · 재난안전본부 — MUGYEONG THEATER</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="_casefile_style.css">
+</head>
+<body>
+  <header class="gnav">
+    <div class="gnav-inner">
+      <div class="brand-l">
+        <a href="index.html" class="mark">MUGYEONG</a>
+        <span class="sub">Theater · 無境上映館</span>
+      </div>
+      <div class="cnum">Film 002 · MG-C-002</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="case-files.html" class="active">Films</a>
+        <a href="worldview.html">World</a>
+        <a href="map.html">Map</a>
+        <a href="gallery.html">Stills</a>
+          <a href="screen.html">Screen</a>
+      </nav>
+    </div>
+    <div class="marquee-dots"></div>
+  </header>
+
+  <div class="wrap">
+    <a href="case-files.html" class="cfback">← Now Showing / Films</a>
+
+    <!-- HEAD ABOVE TICKET -->
+    <div class="cfhead">
+      <div class="prekicker">◆ Now Presenting · Film 002 of 04 ◆</div>
+      <h1>재난안전본부</h1>
+      <div class="heden">Mugyeong Bureau</div>
+      <div class="datehed">Screening · 1976 · Chapter Ⅱ</div>
+    </div>
+
+    <div class="cfmeta">
+      <div>File No.<b>MG-C-002</b></div>
+      <div>Founded<b>1976 · 07</b></div>
+      <div>By<b>제0국</b></div>
+      <div>Zone<b>극비 · Bureau</b></div>
+    </div>
+
+    <!-- ============ CENTRAL TICKET ============ -->
+    <div class="tk">
+      <div class="tkframe"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+
+      <div class="tktop">
+        <span>Admit One</span>
+        <span class="date">1976 · 07</span>
+      </div>
+
+      <div class="tkinner">
+        <div class="tktitle">
+          <div class="pres">◆ Presenting ◆</div>
+          <h2>재난안전본부</h2>
+          <div class="script">Containment · 1976</div>
+        </div>
+
+        <!-- CAROUSEL -->
+        <div class="pcar">
+          <div class="pframe" id="pframe">
+            <div class="pportrait" id="pportrait"></div>
+            <div class="pscan"></div>
+            <div class="phalftone"></div>
+            <div class="pmeta" id="pmeta"></div>
+            <div class="pcorner" id="pcorner"></div>
+            <div class="pnameover" id="pnameover">
+              <div class="pcname" id="pcname"></div>
+              <div class="pcen" id="pcen"></div>
+              <div class="pcrole" id="pcrole"></div>
+            </div>
+          </div>
+          <div class="pctrl">
+            <div class="idx" id="pidx">01 / 04</div>
+            <div class="dots" id="pdots"></div>
+            <div class="btns">
+              <button onclick="prevPhoto()">‹ Prev</button>
+              <button onclick="nextPhoto()">Next ›</button>
+            </div>
+          </div>
+          <a class="plink" id="plink" href="#">
+            <span class="lname">–</span>
+            <span>인물 파일 열람 →</span>
+          </a>
+        </div>
+
+        <!-- CAST -->
+        <div class="tkcast">
+          <div class="presenting">◆ Starring ◆</div>
+          <div class="list">오재현 · 국장 · 서우주 · 한성진</div>
+        </div>
+
+        <!-- VENUE -->
+        <div class="tkvenue">
+          <div>Rated<b>Ⅳ · Restricted</b></div>
+          <div>File<b>MG-C-002</b></div>
+        </div>
+      </div>
+
+      <div class="tkperf"></div>
+      <div class="tkstub"><span>◆ TICKET ◆</span><b>MG-C-002</b></div>
+    </div>
+
+    <!-- ============ AFTERMATH (below the ticket) ============ -->
+    <div class="aftermath">
+      <h4>Brief<b>사건 개요</b></h4>
+      <div>
+
+        <div class="sectionrow">
+          <div>
+            <p class="lede"><span class="drop">본</span>부의 목표는 재앙을 해결하는 것이 아니다. 확산 차단, 격리, 봉쇄선 유지. 오직 이 세 가지뿐이다.</p>
+            <p>1976년 7월 무경시청에서 발생한 원인불명의 재앙 이후, 제0국 주도로 극비 수립되었다. 상위 거주자 강림 지점을 중심으로 무경시 전역이 급속히 터전화되었고, 착호갑사 대부분이 전멸하였다. 잔존 요원들이 본부의 초기 처리반으로 편입되었다. 특이하게도 <b>본부 내부에서는 일반적인 공간 침식 현상이 확인되지 않는다.</b> 그 이유는 제0국의 최상위 기밀로 분류되어 있다.</p>
+          </div>
+        </div>
+
+        <div class="sectionrow">
+          <h4>Structure<b>조직도</b></h4>
+          <div>
+            <div class="orgchart">
+              <div class="lv1">제0국 (최상위 통제 · 지휘 계통 비공개)</div>
+              <div class="lv2">재난안전본부장 · 제0국 직속</div>
+              <div class="lv2">├ 현장팀</div>
+              <div class="lv3">처리반 · 착호갑사 잔존요원 · 봉쇄선 최전방 투입</div>
+              <div class="lv3">감시반 · 구역 순찰 · 봉쇄선 유지</div>
+              <div class="lv2">├ 연구팀</div>
+              <div class="lv3">연구반 · 표본 분석 · 침식 연구</div>
+              <div class="lv3">분석반 · 규율 파악 · 터전 연구</div>
+              <div class="lv2">├ 개발팀</div>
+              <div class="lv3">장비반 · 대응 장비 · 방호복 개발</div>
+              <div class="lv3">약물반 · 정신안정제 · 침식 억제제 연구</div>
+              <div class="lv2">└ 행정팀</div>
+              <div class="lv3">기록반 · 사망 요원 명부 · 표본 관리 · 문서</div>
+              <div class="lv3">보급반 · 장비 지급 · 정신안정제 투약 관리</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sectionrow">
+          <h4>Rules<b>안전수칙 전문</b></h4>
+          <div>
+            <div class="lock">문서번호 DSH-76-SAFE-01 · 요원 안전 수칙 · 현장 투입 전 필수 숙지 문서 · 열람등급 내부</div>
+            <ol class="rulelist">
+              <li><span class="n">01</span><span class="t">각 요원은 반드시 상호 직급 또는 요원명으로 호명한다. 사적 이름 사용은 인지오염 초기 증상으로 간주될 수 있다.</span></li>
+              <li><span class="n">02</span><span class="t">상위 거주자 직접 인식 금지. 간접 관측만 허용한다. 직접 인식 시도는 즉사급 손상을 유발한다.</span></li>
+              <li><span class="n">03</span><span class="t">터전 내 규율 숙지 후 진입. 미숙지 상태의 진입은 금지한다.</span></li>
+              <li><span class="n">04</span><span class="t">정신안정제 투약 일정을 준수한다. 임의 중단 시 인지오염 급속 진행 사례가 다수 보고되었다.</span></li>
+              <li><span class="n">05</span><span class="t">단독 행동 금지. 2인 1조 또는 3인 1조 원칙을 준수한다.</span></li>
+              <li><span class="n">06</span><span class="t">침식 징후 발생 시 즉시 자진 신고 및 격리. 은폐 시 중징계.</span></li>
+              <li><span class="n">07</span><span class="t">요원 정신건강 평가는 주 1회 의무적으로 실시한다.</span></li>
+              <li><span class="n">08</span><span class="t">사망 요원의 유품은 기록반에 등록 후 처리한다. 개인 보관 금지.</span></li>
+              <li><span class="n">09</span><span class="t">표본 보관실 입출고는 이중 승인제로 운영한다. 단독 접근은 절대 금지한다.</span></li>
+            </ol>
+            <br>
+            <div class="lock">주의: 규율 위반 시 즉각 사망 또는 침식 진행 가능. 이 수칙은 요원의 생존을 보장하지 않는다.</div>
+          </div>
+        </div>
+
+        <div class="sectionrow">
+          <h4>Transcript<b>이면수사처 조사 기록</b></h4>
+          <div>
+            <div class="lock">문서번호 IU-76-HQ-001 · 재난안전본부 내 이면 조사 기록 · 이면수사처 제3수사팀 · 열람등급 극비</div>
+
+            <p>이면수사처는 본부 수립 이후 지속적으로 본부 내 이상 현상을 병행 조사하고 있다. 본부 측에는 공유되지 않은 내용이다.</p>
+
+            <div class="orgchart">
+              <div class="lv1">조사 일시: 1976년 <span class="redact">██</span>월 <span class="redact">██</span>일 · 조사관: <span class="redact">███ ██</span> 수사관</div>
+              <br>
+              <div class="lv2">조사관: 본부 수립 초기에 근무하셨다고 들었습니다. 그 시기에 이상한 점을 느끼셨습니까?</div>
+              <div class="lv3">진술인 (처리반 1팀 요원, 근무 기간 <span class="redact">███</span>일): 처음에는 건물이 이상하게 조용하다는 느낌을 받았어요. 봉쇄선 바깥은 항상 소음이 있는데, 여기 안에 들어오면 갑자기 조용해지거든요. 처음엔 방음 때문인가 했죠.</div>
+              <br>
+              <div class="lv2">조사관: 그 이후에는요?</div>
+              <div class="lv3">진술인: 어느 날 야간 근무 중에 복도를 걸어가다가 복도 끝에 있는 문이 없어진 걸 봤어요. 그냥 벽이었어요. 다음날 아침에는 다시 있었고요. 동료한테 얘기했더니 자기도 봤다고 하더라고요. 근데 아무도 신고 안 해요. 왜인지 모르겠지만, 그냥 신고하면 안 될 것 같은 느낌이요.</div>
+              <br>
+              <div class="lv2">조사관: 국장님에 대해서 여쭤봐도 되겠습니까?</div>
+              <div class="lv3">진술인: …국장님은 항상 계세요. 야간에도, 아침에도. 한 번도 주무시는 걸 못 봤어요. 식사도 안 하시는 것 같고. 근데 그게 이상하다고 느낀 건 한참 뒤였어요. 처음엔 그냥 성실하신 분이라고 생각했거든요.</div>
+              <br>
+              <div class="lv2">조사관: 국장님에게서 이상한 점을 느끼신 적이 있습니까?</div>
+              <div class="lv3">진술인: 한 번은 제가 야근하다가 실수로 커피를 쏟았는데, 그게 국장님 서류에 튀었어요. 제가 죄송하다고 했는데 국장님이 그냥 웃으면서 괜찮다고 하시더라고요. 그때 국장님 손을 봤는데… <span class="redact">████████████████████████████████</span></div>
+              <div class="redactnote">［이하 진술 내용 삭제 · 사유: 열람등급 재조정 · 승인자 <span class="redact">███ ██</span>］</div>
+            </div>
+
+
+            <br>
+            <div class="lock">비고: 진술인은 조사 종료 후 <span class="redact">████████████████</span>. 해당 조사 기록은 이면수사처 내부 보관 처리. 본부에 공유 불가.</div>
+          </div>
+        </div>
+
+        <div class="sectionrow">
+          <h4>Anomaly Report<b>본부 내 이상 현상 보고</b></h4>
+          <div>
+            <p>이면수사처 제3수사팀이 취합한 본부 내 이상 현상 목록이다. 본부 측 공식 보고서에는 수록되지 않은 내용들이다.</p>
+            <ol class="rulelist">
+              <li><span class="n">AN-01</span><span class="t">본부 건물 내 침식 현상이 확인되지 않는다. 규율 위반에도 응징이 발동되지 않는다. 이유 불명.</span></li>
+              <li><span class="n">AN-02</span><span class="t">국장실 내부에 대한 정확한 위치 정보가 요원마다 다르다. 복수의 요원이 각기 다른 위치에서 국장실에 진입했다고 진술하였다.</span></li>
+              <li><span class="n">AN-03</span><span class="t">야간 시간대에 본부 건물 외벽에서 빛이 새어 나오는 것이 감지되었다. 해당 시간대 건물 내 전력 사용량은 0이었다.</span></li>
+              <li><span class="n">AN-04</span><span class="t">기록반 사망 요원 명부에 아직 사망하지 않은 요원의 이름이 기재되어 있는 사례가 <span class="redact">██</span>건 확인되었다.</span></li>
+              <li><span class="n">AN-05</span><span class="t">본부 지하 <span class="redact">████</span>의 존재 여부를 확인 중이다. 설계 도면에는 존재하지 않는 공간이다.</span></li>
+            </ol>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+<div class="epilogue">
+      <div class="qmark">"</div>
+      <p>해결이 아니다.<br>확산을 늦추는 것 뿐이다.</p>
+      <cite>— 재난안전본부 내부 문건</cite>
+    </div>
+  </div>
+
+  <footer class="site">
+    <div class="dots"></div>
+    <b>MUGYEONG THEATER</b> · Film 002 · MG-C-002
+  </footer>
+
+  <script>
+    const slides = [{"img": "images/myeongryo.png", "name": "오재현", "en": "Oh Jae-hyeon · 명료", "role": "변이연구팀장 · 수석연구원", "code": "MG-P-005", "slug": "ojaehyeon"}, {"img": "images/gukjang.png", "name": "국장", "en": "The Director", "role": "재난안전본부 국장 · 제0국 고위직", "code": "MG-P-004", "slug": "gukjang"}, {"img": "images/somyeong.png", "name": "서우주", "en": "Seo Woo-ju · 소명", "role": "재난안전본부 처리반 1팀", "code": "MG-P-003", "slug": "seowooju"}, {"img": "images/yusa.png", "name": "한성진", "en": "Han Seong-jin · 유사", "role": "재난안전본부 처리반", "code": "MG-P-002", "slug": "hanseongjin"}];
+    let idx = 0;
+    const $port  = document.getElementById('pportrait');
+    const $meta  = document.getElementById('pmeta');
+    const $corn  = document.getElementById('pcorner');
+    const $cn    = document.getElementById('pcname');
+    const $ce    = document.getElementById('pcen');
+    const $cr    = document.getElementById('pcrole');
+    const $ix    = document.getElementById('pidx');
+    const $dots  = document.getElementById('pdots');
+    const $link  = document.getElementById('plink');
+    const $frame = document.getElementById('pframe');
+
+    function render(){
+      const s = slides[idx];
+      $port.style.backgroundImage = "url('" + s.img + "')";
+      $meta.innerHTML = 'Personnel · ' + s.code;
+      $corn.textContent = '0' + (idx+1) + ' / 0' + slides.length;
+      $cn.textContent = s.name;
+      $ce.textContent = s.en;
+      $cr.textContent = s.role;
+      $link.href = 'character-' + s.slug + '.html';
+      $link.querySelector('.lname').textContent = s.name;
+      $ix.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+      $dots.innerHTML = slides.map((_,i) => '<span class="' + (i===idx ? 'on' : '') + '"></span>').join('');
+    }
+    function nextPhoto(){ idx = (idx+1) % slides.length; render(); }
+    function prevPhoto(){ idx = (idx-1+slides.length) % slides.length; render(); }
+    render();
+
+    let tx = null;
+    $frame.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+    $frame.addEventListener('touchend', e => {
+      if (tx === null) return;
+      const d = e.changedTouches[0].clientX - tx;
+      if (d > 40) prevPhoto(); else if (d < -40) nextPhoto();
+      tx = null;
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') prevPhoto();
+      if (e.key === 'ArrowRight') nextPhoto();
+    });
+  </script>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>

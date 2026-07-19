@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사건파일 : 무경병원 — MUGYEONG</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="_casefile_style.css">
+</head>
+<body>
+    <header class="gnav">
+    <div class="gnav-inner">
+      <div class="brand-l">
+        <a href="index.html" class="mark">MUGYEONG</a>
+        <span class="sub">Theater · 無境上映館</span>
+      </div>
+      <div class="cnum">COMING SOON · TBA</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="case-files.html">Films</a>
+        <a href="worldview.html">World</a>
+        <a href="map.html">Map</a>
+        <a href="gallery.html">Stills</a>
+          <a href="screen.html">Screen</a>
+      </nav>
+    </div>
+    <div class="marquee-dots"></div>
+  </header>
+
+  <div class="cfdetail">
+    <a href="case-files.html" class="cfback">← Chapter Ⅰ / Case Archive</a>
+
+    <div class="cftop">
+      <div class="cftitleblock">
+        <span class="code">03 / 04 · MG-C-003 · Ward</span>
+        <h1>무경<br>병원</h1>
+        <div class="sub">격리 · 의료 · 표본 이송의 종착지</div>
+        <div class="tags"><span class="tag">비공개 · Level Ⅳ</span><span class="tag">면회 금지</span></div>
+
+        <table class="cfspec">
+          <tr><th>File No.</th><td>MG-C-003</td></tr>
+          <tr><th>구분</th><td>무경시 유일 종합병원</td></tr>
+          <tr><th>담당</th><td>봉쇄구역 부상자 · 격리자 수용</td></tr>
+          <tr><th>관리</th><td>재난안전본부 연구팀 연계</td></tr>
+          <tr><th>상태</th><td>외부 면회 전면 금지 · 지하 병동 접근 제한</td></tr>
+        </table>
+      </div>
+
+      <div class="pcar">
+        <div class="pframe" id="pframe" style="--tone1:#2a2a2a;--tone2:#050505;">
+          <div class="pimg" id="pimg"></div>
+          <div class="pglyph" id="pglyph">·</div>
+          <div class="pportrait" id="pportrait"></div>
+          <div class="pscan"></div>
+          <div class="phalftone"></div>
+          <div class="pcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+          <div class="pmeta" id="pmeta"></div>
+          <div class="pcorner" id="pcorner"></div>
+          <div class="pcap" id="pcap"></div>
+        </div>
+        <div class="pctrl">
+          <div class="idx" id="pidx">01 / 04</div>
+          <div class="dots" id="pdots"></div>
+          <div class="btns">
+            <button onclick="prevPhoto()">← Prev</button>
+            <button onclick="nextPhoto()">Next →</button>
+          </div>
+        </div>
+        <a id="plink" class="plink" href="#">
+          <span class="lname">–</span>
+          <span class="larrow">인물 파일 열람 →</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="cfsection">
+      <div class="row">
+        <h4>Brief<b>발단</b></h4>
+        <div>
+          <p class="lede"><span class="drop">무</span>경시에서 발생한 부상자와 격리 대상자가 이송되는 유일한 종합병원이다.</p>
+          <p>표면적으로는 응급 치료 시설이지만, <b>지하 병동</b>에 대해서는 병원 직원들조차 접근 권한을 부여받지 못한 구역이 존재한다는 증언이 있다. 침식 징후가 확인된 요원 및 민간인은 이곳으로 이송되어 연구팀에 인계된다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfsection">
+      <div class="row">
+        <h4>Locked<b>제한열람</b></h4>
+        <div>
+          <div class="lock">🔒 환자 명단 및 병동 기록은 열람이 제한됩니다. 접근 시도 자체가 기록되고 있습니다.</div>
+          <p class="blur">이송된 환자 중 일부는 며칠 뒤 기록에서 조용히 사라진다. 보호자들에게는 "전원 조치"라는 설명뿐, 이송 병원명은 공개되지 않는다. 야간 근무자들 사이에서는 지하로 통하는 엘리베이터가 특정 시간대에만 작동한다는 소문이 돈다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfquote">
+      <div class="qmark">“</div>
+      <p>전원 조치입니다.<br>그 이상은 저희도 모릅니다.</p>
+      <cite>— 병원 관계자</cite>
+    </div>
+  </div>
+
+  <footer class="site"><div class="dots"></div><b>MUGYEONG THEATER</b> · Coming Soon</footer>
+
+  <script>
+    const slides = [{"type": "setting", "glyph": "病", "meta": "FIG.01 · Mugyeong Hospital", "corner": "Confidential", "cap": "지하 병동 · 판독 불가", "tone1": "#2a2a2a", "tone2": "#050505"}, {"type": "setting", "glyph": "▦", "meta": "FIG.02 · 야간 근무자 진술", "corner": "Confidential", "cap": "야간 근무자 진술 스케치", "tone1": "#2a2a2a", "tone2": "#050505"}, {"type": "personnel", "slug": "seojihan", "img": "images/seojihan.png", "name": "서지한", "role": "119구조대 · 응급구조사", "code": "MG-P-007"}, {"type": "personnel", "slug": "ojaehyeon", "img": "images/myeongryo.png", "name": "오재현", "role": "변이연구팀장 · 명료(命料)", "code": "MG-P-005"}];
+    let idx = 0;
+    const $frame = document.getElementById('pframe');
+    const $glyph = document.getElementById('pglyph');
+    const $port  = document.getElementById('pportrait');
+    const $meta  = document.getElementById('pmeta');
+    const $corn  = document.getElementById('pcorner');
+    const $cap   = document.getElementById('pcap');
+    const $ix    = document.getElementById('pidx');
+    const $dots  = document.getElementById('pdots');
+    const $link  = document.getElementById('plink');
+
+    function render(){
+      const s = slides[idx];
+      if (s.type === 'setting') {
+        $glyph.style.display = 'flex';
+        $glyph.textContent = s.glyph;
+        $port.style.display = 'none';
+        $port.style.backgroundImage = '';
+        $frame.style.setProperty('--tone1', s.tone1);
+        $frame.style.setProperty('--tone2', s.tone2);
+        $meta.innerHTML = s.meta;
+        $corn.textContent = s.corner;
+        $cap.textContent = s.cap;
+        $link.classList.remove('on');
+        $link.href = '#';
+      } else {
+        $glyph.style.display = 'none';
+        $port.style.display = 'block';
+        $port.style.backgroundImage = "url('" + s.img + "')";
+        $frame.style.setProperty('--tone1', '#1a1a1a');
+        $frame.style.setProperty('--tone2', '#050505');
+        $meta.innerHTML = '<b>' + s.code + '</b> · Personnel';
+        $corn.textContent = 'File · ' + s.code.split('-').pop();
+        $cap.textContent = s.role;
+        $link.classList.add('on');
+        $link.href = 'character-' + s.slug + '.html';
+        $link.querySelector('.lname').textContent = s.name;
+        $link.querySelector('.larrow').textContent = '인물 파일 열람 →';
+      }
+      $ix.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+      $dots.innerHTML = slides.map((_,i) => '<span class="' + (i===idx ? 'on' : '') + '"></span>').join('');
+    }
+    function nextPhoto(){ idx = (idx+1) % slides.length; render(); }
+    function prevPhoto(){ idx = (idx-1+slides.length) % slides.length; render(); }
+    render();
+
+    let tx = null;
+    $frame.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+    $frame.addEventListener('touchend', e => {
+      if (tx === null) return;
+      const d = e.changedTouches[0].clientX - tx;
+      if (d > 40) prevPhoto(); else if (d < -40) nextPhoto();
+      tx = null;
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') prevPhoto();
+      if (e.key === 'ArrowRight') nextPhoto();
+    });
+  </script>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>

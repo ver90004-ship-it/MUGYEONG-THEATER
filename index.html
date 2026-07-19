@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>무경 상영관 · MUGYEONG THEATER</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  html,body{ height:100%; overflow:hidden; margin:0; }
+  .stage{ position:relative; width:100%; height:100vh; height:100dvh; overflow:hidden; }
+
+  .bg-lobby{ position:absolute; inset:0; z-index:0; background:url('images/bg-lobby.png') center center/cover no-repeat; filter:grayscale(1) brightness(.4) contrast(1.15); }
+  .bg-lobby::after{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,.7) 100%); }
+  .grain{ position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.06; background-image:radial-gradient(circle, rgba(255,255,255,.5) 1px, transparent 1.5px); background-size:3px 3px; }
+
+  /* ===== HORROR VERTICAL TEXT ===== */
+  .horror-bg{
+    position:absolute; z-index:2; inset:0; pointer-events:none; opacity:0;
+    display:flex; justify-content:center; align-items:center; gap:12px;
+    padding:5vh 8vw; overflow:hidden; transition:opacity .4s;
+  }
+  .horror-bg.on{ opacity:1; }
+  .horror-bg.fade{ opacity:0; }
+  .horror-col{
+    writing-mode:vertical-rl; text-orientation:mixed;
+    font-family:'Nanum Myeongjo',serif; font-size:clamp(13px,1.6vw,20px);
+    color:rgba(255,255,255,.55); line-height:2.2; letter-spacing:.08em;
+    white-space:nowrap; overflow:hidden; max-height:80vh;
+  }
+
+  /* TOP */
+
+
+  /* ===== CHARACTER (in-place, no zoom) ===== */
+  .char-layer{
+    position:absolute; z-index:3;
+    bottom:22%; left:50%; transform:translateX(-50%);
+    width:clamp(240px, 28vw, 400px);
+    pointer-events:none;
+  }
+  .char-layer img{ width:100%; height:auto; display:block; filter:grayscale(1) contrast(1.12) brightness(.9); transition:opacity .15s; }
+  .char-layer.scared img{ filter:grayscale(1) contrast(1.35) brightness(.72); animation:unease 3s ease-in-out infinite; }
+
+  .char-click{
+    position:absolute; z-index:6; bottom:22%; left:50%; transform:translateX(-50%);
+    width:clamp(220px, 26vw, 380px); height:50vh; cursor:pointer;
+  }
+  /* in-place flicker during scare — no size change */
+  .char-layer.flicker img{ animation:charFlicker 1.8s steps(1) forwards; }
+  @keyframes charFlicker{
+    0%{opacity:1} 6%{opacity:0} 10%{opacity:1} 16%{opacity:0} 22%{opacity:1} 28%{opacity:0}
+    34%{opacity:1} 40%{opacity:0} 46%{opacity:1} 52%{opacity:0} 58%{opacity:1} 64%{opacity:0}
+    70%{opacity:1} 76%{opacity:0} 82%{opacity:1} 88%{opacity:0} 94%{opacity:1} 100%{opacity:1}
+  }
+  @keyframes unease{ 0%,100%{filter:grayscale(1) contrast(1.35) brightness(.72)} 50%{filter:grayscale(1) contrast(1.45) brightness(.67)} }
+
+
+
+  /* NAME */
+  .nameplate{
+    position:absolute; z-index:8; pointer-events:none;
+    top:18%; right:calc(50% - clamp(120px,14vw,200px) - clamp(36px,5vw,60px));
+  }
+  .nameplate .pname{
+    font-family:'Nanum Myeongjo',serif; font-size:clamp(22px,2.8vw,32px);
+    color:rgba(255,255,255,.6); font-weight:700; letter-spacing:.08em;
+    writing-mode:vertical-rl; text-orientation:mixed;
+    text-shadow:0 2px 20px rgba(0,0,0,.9);
+  }
+  .nameplate .pen{
+    font-family:'Cinzel',serif; font-size:clamp(8px,1vw,10px); letter-spacing:.3em;
+    color:rgba(255,255,255,.2); text-transform:uppercase; margin-top:8px; writing-mode:vertical-rl;
+  }
+
+  /* BOOTH */
+  .booth-layer{
+    position:absolute; z-index:5; bottom:0; left:50%; transform:translateX(-50%);
+    width:clamp(700px, 78vw, 1200px); pointer-events:none;
+  }
+  .booth-layer img{ width:100%; height:auto; display:block; filter:grayscale(1) brightness(.82) contrast(1.1); }
+
+  /* ARCS */
+  .arc-left,.arc-right{
+    position:absolute; z-index:10; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:clamp(8px,1.4vh,14px);
+  }
+  .arc-left{ left:clamp(8px,8vw,140px); }
+  .arc-right{ right:clamp(8px,8vw,140px); }
+
+  .onode{
+    width:clamp(46px,5.5vw,60px); height:clamp(46px,5.5vw,60px); border-radius:50%;
+    border:1.5px solid rgba(255,255,255,.16); background:rgba(0,0,0,.7);
+    cursor:pointer; transition:.3s; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;
+  }
+  .onode:hover{ border-color:rgba(255,255,255,.5); transform:scale(1.08); }
+  .onode.active{ border-color:rgba(255,255,255,.8); box-shadow:0 0 16px rgba(255,255,255,.1); }
+  .onode .nimg{ width:100%; height:100%; object-fit:cover; object-position:center 18%; filter:grayscale(1) contrast(1.15) brightness(.5); border-radius:50%; transition:filter .3s; }
+  .onode.active .nimg{ filter:grayscale(1) contrast(1.1) brightness(.9); }
+  .onode.deco{ width:clamp(20px,2.5vw,28px); height:clamp(20px,2.5vw,28px); border-color:rgba(255,255,255,.07); cursor:default; }
+  .onode.deco:hover{ transform:none; }
+  .onode.deco .sym{ font-size:clamp(8px,1.1vw,12px); color:rgba(255,255,255,.1); }
+
+  /* BUBBLE */
+  .bubble{
+    position:absolute; z-index:15; bottom:calc(22% + 4px); left:50%; transform:translateX(-50%);
+    max-width:min(440px,72vw); width:max-content;
+    background:rgba(5,5,5,.88); border:1px solid rgba(255,255,255,.14);
+    padding:16px 22px 14px; opacity:0; pointer-events:none; transition:opacity .3s;
+  }
+  .bubble.show{ opacity:1; }
+  .bubble::after{ content:""; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); border-left:8px solid transparent; border-right:8px solid transparent; border-top:8px solid rgba(255,255,255,.14); }
+  .bubble .bname{ font-family:'Cinzel',serif; font-size:clamp(9px,1.2vw,11px); letter-spacing:.24em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-bottom:8px; }
+  .bubble .bname::before{ content:"◆ "; font-size:6px; color:rgba(255,255,255,.18); }
+  .bubble .btext{ font-family:'Nanum Myeongjo',serif; font-size:clamp(13px,1.8vw,16px); line-height:1.8; color:rgba(255,255,255,.5); min-height:22px; }
+  .bubble .btext.scared-text{ font-family:'Kaushan Script',cursive; font-style:italic; color:rgba(255,255,255,.28); font-size:clamp(14px,2vw,18px); }
+
+  /* screen effects */
+  .shake{ animation:shakeIt .5s ease-out; }
+  @keyframes shakeIt{ 0%{transform:translate(0)} 12%{transform:translate(-3px,2px)} 24%{transform:translate(3px,-2px)} 36%{transform:translate(-2px,3px)} 48%{transform:translate(3px,-1px)} 60%{transform:translate(-2px,2px)} 72%{transform:translate(2px,-2px)} 84%{transform:translate(-1px,1px)} 100%{transform:translate(0)} }
+
+  /* black flash */
+  .blackflash{ position:fixed; inset:0; z-index:900; background:#000; pointer-events:none; display:none; }
+  .blackflash.on{ display:block; animation:bflash 1.8s steps(1) forwards; }
+  @keyframes bflash{ 0%{opacity:1} 8%{opacity:0} 14%{opacity:.8} 20%{opacity:0} 28%{opacity:1} 36%{opacity:0} 44%{opacity:.6} 52%{opacity:0} 60%{opacity:1} 68%{opacity:0} 76%{opacity:.7} 84%{opacity:0} 92%{opacity:.5} 100%{opacity:0} }
+
+  .bottom-strip{ position:absolute; bottom:0; left:0; right:0; z-index:7; height:2px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent); }
+
+  /* =============== MOBILE =============== */
+  @media (max-width:768px){
+    .gnav-inner{ padding:12px 16px; }
+    .gnav .brand-l .sub{ display:none; }
+    .gnav .cnum{ display:none; }
+    .gnav nav a{ padding:6px 10px; font-size:9px; letter-spacing:.14em; }
+
+    .char-layer{ width:82vw; bottom:5%; }
+    .char-click{ width:78vw; height:50vh; bottom:5%; }
+    .char-layer img{ width:100%; height:auto; }
+
+
+    .booth-layer{ width:200vw; bottom:-6%; }
+
+    .nameplate{ top:auto; bottom:56%; right:14vw; left:auto; transform:none; text-align:right; }
+    .nameplate .pname{ writing-mode:vertical-rl; font-size:22px; letter-spacing:.08em; }
+    .nameplate .pen{ writing-mode:vertical-rl; margin-top:6px; }
+    .nameplate .pname{ font-size:24px; }
+    .nameplate .pen{ font-size:9px; }
+
+    .arc-left{ left:2px; gap:4px; }
+    .arc-right{ right:2px; gap:4px; }
+    .onode{ width:11vw; height:11vw; min-width:42px; min-height:42px; }
+    .onode.deco{ width:5.5vw; height:5.5vw; min-width:20px; min-height:20px; }
+
+    .bubble{ max-width:92vw !important; width:92vw !important; bottom:auto !important; top:18% !important; left:50% !important; transform:translateX(-50%) !important; padding:28px 30px 24px !important; }
+
+    .bubble .btext{ font-size:22px !important; line-height:1.75 !important; }
+    .bubble .bname{ font-size:16px !important; letter-spacing:.16em !important; }
+    .bubble .btext{ font-size:14px; }
+
+    .deco-line-l,.deco-line-r{ display:none; }
+    .horror-bg{ padding:2vh 3vw; gap:6px; }
+    .horror-col{ font-size:14px; max-height:65vh; }
+  }
+
+  @media (max-width:420px){
+    .gnav-inner{ padding:10px 12px; }
+    .gnav .brand-l .mark{ font-size:14px; letter-spacing:.3em; }
+
+    .char-layer{ width:86vw; bottom:4%; }
+    .char-click{ width:82vw; height:48vh; bottom:4%; }
+
+
+    .booth-layer{ width:220vw; bottom:-7%; }
+
+    .nameplate{ bottom:54%; right:12vw; left:auto; transform:none; }
+    .nameplate .pname{ font-size:20px; writing-mode:vertical-rl; }
+    .nameplate .pen{ writing-mode:vertical-rl; }
+    .nameplate .pname{ font-size:22px; }
+
+    .arc-left{ left:1px; } .arc-right{ right:1px; }
+    .onode{ width:11vw; height:11vw; min-width:40px; min-height:40px; }
+    .onode.deco{ width:5vw; height:5vw; min-width:18px; min-height:18px; }
+
+    .bubble{ bottom:auto !important; top:16% !important; max-width:94vw !important; width:94vw !important; padding:26px 26px 22px !important; }
+    .bubble .btext{ font-size:20px !important; line-height:1.7 !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="blackflash" id="blackflash"></div>
+
+  <div class="stage" id="stage">
+    <div class="bg-lobby"></div>
+    <div class="grain"></div>
+
+    <!-- HORROR VERTICAL TEXT COLUMNS -->
+    <div class="horror-bg" id="horrorBg"></div>
+
+    <header class="gnav" style="position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(5,5,5,.85);">
+      <div class="gnav-inner">
+        <div class="brand-l">
+          <a href="index.html" class="mark">MUGYEONG</a>
+          <span class="sub">Theater · 無境上映館</span>
+        </div>
+        <div class="cnum">Now Showing · Vol.06</div>
+        <nav>
+          <a href="index.html" class="active">Home</a>
+          <a href="case-files.html">Films</a>
+          <a href="worldview.html">World</a>
+          <a href="map.html">Map</a>
+          <a href="gallery.html">Stills</a>
+          <a href="screen.html">Screen</a>
+        </nav>
+      </div>
+      <div class="marquee-dots"></div>
+    </header>
+
+    <div class="arc-left" id="arcL"></div>
+    <div class="arc-right" id="arcR"></div>
+
+    <div class="char-layer" id="charLayer"><img id="charImg" src="images/baekmubeom.png" alt=""></div>
+    <div class="char-click" id="charClick"></div>
+
+
+    <div class="nameplate">
+      <div class="pname" id="pName">백무범</div>
+      <div class="pen" id="pEn">01</div>
+    </div>
+
+    <div class="bubble" id="bubble">
+      <div class="bname" id="bName">백무범</div>
+      <div class="btext" id="bText"></div>
+    </div>
+
+    <div class="booth-layer"><img src="images/booth.png" alt=""></div>
+    <div class="bottom-strip"></div>
+  </div>
+
+<script>
+const cast = [
+  { img:'images/baekmubeom.png', name:'백무범', en:'01', scare:null, scareLines:null,
+    lines:[
+      '"움직이지 마. 한 번 더 말하게 하지 마라."',
+      '"본부, 3층 복도 동측. 변이 의심 개체 하나. 사살 허가 요청한다."',
+      '"네가 뭘 느끼든 상관없어. 지시에 따라."',
+      '"경고는 한 번 뿐이다."',
+      '"가족 사진…? 아무것도 아니야. 집어넣어."',
+      '"생존자 확인. 인원 셋, 부상 하나. 통제 개시. 무단 이탈 시 적대 행위로 간주한다."',
+      '"저건 사람이 아니다. 비켜."',
+      '"명령이다. 이해 여부는 묻지 않았다."',
+      '"소리 질러봐야 아무도 안 온다. 여긴 봉쇄 구역이야."',
+      '"임무 완료 후 귀환한다. 그때까지 살아 있으면… 데려가 주지."',
+    ] },
+  { img:'images/yusa.png', name:'한성진', en:'02', scare:null, scareLines:null,
+    lines:[
+      '"내가 먼저 들어갈 테니까 뒤에서 셋까지 세고 따라와. 알겠지?"',
+      '"밥은 먹고 다녀? 얼굴이 백지장 같다, 백지장."',
+      '"봉쇄선 안쪽이라고? 그래, 뭐 산책 겸 들어가 볼까."',
+      '"죽는 게 무섭냐고? 글쎄, 남들 죽는 거 보는 게 더 무섭지."',
+      '"내가 앞에 설게. 뒤에서 쏴. 간단하지?"',
+      '"아프냐고? 에이, 이 정도면 긁힌 거지. 소독이나 해줘, 응?"',
+      '"봐, 멀쩡하지? 손가락 열 개 다 있어. 세어 봐."',
+      '"미안. 늦었지? …아, 미안하다니까. 핑계 안 댈게."',
+      '"내일? 내일은 모르지. 오늘 살아 있으니까 오늘 얘기하자."',
+      '"긴장하지 마. 내가 앞에 설 테니까."',
+    ] },
+  { img:'images/somyeong.png', name:'서우주', en:'03', scare:null, scareLines:null,
+    lines:[
+      '"요원님~ 오늘 컨디션 어때요? 저는 좀 좋은 편이에요, 헤헤."',
+      '"아, 이거요? 어제 보급반에서 새로 나온 건데, 귀엽지 않아요?"',
+      '"요원님~ 밥 같이 먹어요!"',
+      '"여기 앉아요. 제 옆 자리 비었어요!"',
+      '"아, 저 이거 좋아해요! 달달한 거 최고예요, 헤헤."',
+      '[무전] "정면. 두 개체. 거리 12. 탄창 잔여 4."',
+      '[무전] "침식 2단계 확인. 처리합니다."',
+      '[무전] "퇴로 확보 불가. 우회합니다. 따라오세요."',
+      '"에이— 그렇게 보시면 부담스럽단 말이에요~"',
+      '"…아뇨. 꿈은 안 꿔요. 하나도."',
+    ] },
+  { img:'images/gukjang.png', name:'국장', en:'04', scare:null, scareLines:null,
+    lines:[
+      '"수고하셨습니다. 오늘도 무사히 귀환하셨군요."',
+      '"급하지 않습니다. 천천히 말씀해 주셔도 됩니다."',
+      '"처분은 제가 판단합니다. 요원님이 걱정할 영역은 아닙니다."',
+      '"잠은 충분히 주무셨습니까?"',
+      '"유언이라는 것은, 무거운 것이지요. 이행하지 않을 수 없을 만큼."',
+      '"보고서는 내일까지 제출해 주시면 됩니다."',
+      '"아, 그 요원 말입니까. 안타깝군요. 기록반에 전달하겠습니다."',
+      '"제가 이곳을 관리하는 한, 이 건물 안은 안전합니다."',
+      '"괜찮으십니까. 부상이 있으시다면, 말씀해 주십시오."',
+      '"…오래 살았습니다. 그것만으로도 충분히, 피곤한 일이지요."',
+    ] },
+  { img:'images/myeongryo.png', name:'오재현', en:'05', scare:null, scareLines:null,
+    lines:[
+      '"아, 오셨군요. 마침 여쭤볼 것이 있었습니다. 앉으시죠."',
+      '"흥미롭군요. 이 단계에서 의식이 남아 있다니."',
+      '"고통은 주관적 지표입니다. 제가 관심 있는 건 수치예요."',
+      '"걱정하지 마세요. 아프더라도, 오래가진 않을 겁니다."',
+      '"요원님, 혹시 최근 환청 빈도가 늘지 않으셨나요? 솔직하게 말씀해 주시면 제가 도울 수 있습니다."',
+      '"비윤리적이라고요? 그건 관점의 차이입니다. 저는 효율적이라고 부릅니다."',
+      '"표본이 부족해서요. 혹시 자원해 주실 의향은? 농담입니다."',
+      '"죄책감이요? 글쎄요, 그런 감정이 연구 성과를 내주진 않으니까요."',
+      '"보고할 내용은 제가 정리하겠습니다. 편하게 계세요."',
+      '"죽음이 무섭다고요? 저는 그보다 알지 못하고 죽는 게 더 무섭습니다만."',
+    ] },
+  { img:'images/leedoyoon.png', name:'이도윤', en:'06', scare:'images/scare-doyoon.png',
+    scareLines:[
+      '뭘 봐. 누워있어.',
+      '야. 밥 안 먹을 거야? 죽고 싶어?',
+      '소리 내지 마. 수간호사 온다.',
+      '아프면 아프다고 써. 소리내지 말고.',
+      '잠 안오면 그냥 눈 감고 있어.',
+      '……짜증나게 왜 웃어. 됐고 누워.',
+      '내가 언제 걱정했다고? 헛소리 집어쳐.',
+      '무슨 니 얼굴을 보러와. 그냥 당직이라 순회 돈 거야.',
+      '…열 오르면 바로 콜 눌러. 누르기 싫으면 죽던가.',
+      '너 진짜 짜증나… 멍청한게…',
+    ],
+    lines:[
+      '"씨발, 뛰라고! 뒤돌아보지 마, 그냥 앞만 봐!"',
+      '"…짜증나게 왜 울어. 울면 뭐가 달라져? 일어나. 내가 끌어줄 테니까."',
+      '"저 개새끼들 진짜…민간인한테 총을 쏴? 군인이라는 놈들이?"',
+      '"눈 감지 마, 이 새끼야."',
+      '"제발 내 뒤에서 꼼짝 말고 있어."',
+      '"괜찮냐고 물었잖아. 대답해."',
+      '"나도 무서워. 근데 그거랑 널 여기 두고 가는 거랑은 다른 문제야."',
+      '"아까 그 소리 들었지? 사람 목소리 같았는데 …느낌이 별로야."',
+      '"버리고 못 가. 그러니까 닥치고 내 등에 업혀. 빨리."',
+      '"형사 5년 하면서 시체는 많이 봤어. 근데 이건…"',
+    ] },
+  { img:'images/seojihan.png', name:'서지한', en:'07', scare:'images/scare-jihan.png',
+    scareLines:[
+      '소음 발생 시각 03:12. 해당 병실 환자 진정제 투여 완료. 재발 시 구속대 적용.',
+      '규칙. 1회 경고. 2회 제재.',
+      '불필요한 움직임.',
+      '면회 불가.',
+      '이도윤 간호사. 당직 교대 3분 초과. 기록함.',
+      '조용히.',
+      '환자 000호 격리실 점검 일정: 04:00. 동행 불가. 접근 금지.',
+      '퇴원 요청 기각.',
+      '규정 제7조. 병동 내 발성 일체 금지. 예외 없음.',
+      '진정제 투여 완료. 다음 위반 시 용량 상향.',
+    ],
+    lines:[
+      '"숨 크게 쉬세요. 코로 들이마시고, 입으로 내뱉고. 제가 여기 있습니다."',
+      '"지혈부터 합니다. 아플 겁니다. 참으세요. 제 눈 보세요, 여기."',
+      '"…한 명도 더는 놓치지 않겠습니다."',
+      '"의식 있습니까? 제 손 잡아보세요. 힘껏. …좋습니다, 아직 괜찮아요."',
+      '"확신이 없으면 접근하지 맙시다."',
+      '"출혈량이 많습니다. 여기서 더 지체하면 쇼크 옵니다. 일어날 수 있습니까?"',
+      '"이번엔 놓치지 않겠습니다."',
+      '"포기하지 마세요."',
+      '"확인 전까진 사람으로 대할겁니다."',
+      '"제가 앞쪽을 확인하고 돌아오겠습니다. 절대 움직이지 마세요."',
+    ] },
+  { img:'images/leeminhyeok.png', name:'이민혁', en:'08', scare:null, scareLines:null,
+    lines:[
+      '"저… 저 좀 살려주세요… 다리가, 다리가 꺾인 것 같아요… 움직일 수가…"',
+      '"계속 아무도 안 왔어요. 소리 질러도… 아무도…"',
+      '"감사합니다, 정말… 이제 괜찮은 거죠? 같이 나갈 수 있는 거죠?"',
+      '"배가… 너무 고파요. 이상하게, 아까부터 계속… 머릿속이 그 생각뿐이에요."',
+      '"가까이 와주실 수 있어요? 제가 좀… 안심이 되게… 옆에만 있어주세요."',
+      '"다 죽었어요. 저만 살았어요. 저만…"',
+      '"(웃긴 게요, 아프긴 한데 어디가 아픈지 모르겠어요.)"',
+      '"저는 괜찮아요, 진짜. 그냥 좀 다쳤을 뿐이에요. 신경 쓰지 마세요, 네?"',
+      '"…이쪽으로 오세요. 둘이서만 있으면… 좀 더 안전하잖아요, 그렇죠?"',
+      '"고마워요. 정말… 당신 덕분에 살았어요. 그러니까… 조금만 더 가까이…"',
+    ] },
+];
+
+const HORROR_LINES = [
+  "머리를 숙여라.",
+  "시선을 들지 마라.",
+  "그분의 윤곽을 이해하려 들지 않는 것이 예다.",
+  "숨을 낮추고, 목소리를 죽여라.",
+  "허락 없는 언어는 무례이며, 무례는 죄다.",
+  "허리를 굽혀라.",
+  "각도가 부족하면 경의가 아니다.",
+  "공포는 불충의 증거가 아니라, 올바른 인식의 시작이다.",
+  "손은 비워라.",
+  "쥔 것은 모두 내려놓아라.",
+  "소유는 그분 앞에서 의미를 잃는다.",
+  "남는 것은 복종뿐이다.",
+  "숭배하라.",
+  "이해하지 못해도 괜찮다.",
+  "이해하려는 시도 자체가 오만이다.",
+  "그분은 설명되지 않는다.",
+  "기억해라.",
+  "고개를 든 자는 왜곡됐고,",
+  "이름을 잃은 자는 기록에서 지워졌다.",
+  "지금 이 순간에도 그분은 보고 있다.",
+  "더 낮게. 더 조용히.",
+  "더 완전하게 경배하라.",
+];
+
+const decoSyms = ['◆','☽','✦','◯','△','⊕','▽','☾'];
+const $=id=>document.getElementById(id);
+let cur=0, lineIdx=0, clickCount={}, scaredState={}, bubbleTimer=null, typeTimer=null, revertTimer=null;
+
+function buildArc(container, chars, decos){
+  for(let i=0;i<4;i++){
+    const d=document.createElement('div'); d.className='onode deco';
+    d.innerHTML=`<span class="sym">${decos[i]}</span>`;
+    container.appendChild(d);
+    const n=document.createElement('div'); n.className='onode char';
+    if(chars[i]===0) n.classList.add('active');
+    n.dataset.ci=chars[i];
+    n.innerHTML=`<img class="nimg" src="${cast[chars[i]].img}" alt="${cast[chars[i]].name}">`;
+    n.addEventListener('click',()=>selectChar(chars[i]));
+    container.appendChild(n);
+  }
+}
+buildArc($('arcL'),[0,1,2,3],decoSyms.slice(0,4));
+buildArc($('arcR'),[4,5,6,7],decoSyms.slice(4));
+
+function typeText(text, el, speed=30){
+  clearInterval(typeTimer);
+  el.textContent=''; let i=0;
+  typeTimer=setInterval(()=>{
+    if(i<text.length){ el.textContent+=text[i]; i++; }
+    else clearInterval(typeTimer);
+  }, speed);
+}
+
+function showBubble(){
+  const c = cast[cur];
+  const isScared = scaredState[cur] && c.scareLines;
+  const pool = isScared ? c.scareLines : c.lines;
+  const line = pool[Math.floor(Math.random() * pool.length)];
+
+  $('bName').textContent = c.name;
+
+  // 필담 style for scare state
+  if (isScared) {
+    $('bText').classList.add('scared-text');
+  } else {
+    $('bText').classList.remove('scared-text');
+  }
+
+  typeText(line, $('bText'), isScared ? 60 : 30);
+  $('bubble').classList.add('show');
+  clearTimeout(bubbleTimer);
+  bubbleTimer=setTimeout(()=>$('bubble').classList.remove('show'), 6000);
+}
+
+function selectChar(ci){
+  cur=ci; lineIdx=0; clickCount[ci]=0;
+  clearTimeout(revertTimer);
+
+  $('charImg').style.opacity='0';
+  setTimeout(()=>{
+    $('charImg').src=cast[ci].img;
+    $('charImg').style.opacity='1';
+    $('charLayer').classList.remove('scared','flicker');
+  },150);
+
+  $('pName').textContent=cast[ci].name;
+  $('pEn').textContent=cast[ci].en;
+
+  document.querySelectorAll('.onode.char').forEach(n=>n.classList.remove('active'));
+  const a=document.querySelector(`.onode[data-ci="${ci}"]`);
+  if(a) a.classList.add('active');
+
+  setTimeout(()=>showBubble(), 250);
+}
+
+function handleClick(){
+  if(!clickCount[cur]) clickCount[cur]=0;
+  clickCount[cur]++;
+
+  if(clickCount[cur]===10 && cast[cur].scare && !scaredState[cur]){
+    triggerScare(cur); return;
+  }
+  showBubble();
+}
+
+function triggerScare(ci){
+  scaredState[ci] = true;
+  hideBubble();
+
+  // 1) Create vertical horror text columns
+  const $hbg=$('horrorBg');
+  $hbg.innerHTML='';
+  const numCols = Math.min(HORROR_LINES.length, 14);
+  const cols = [];
+  for(let c=0;c<numCols;c++){
+    const col=document.createElement('div');
+    col.className='horror-col';
+    col.textContent='';
+    $hbg.appendChild(col);
+    cols.push(col);
+  }
+  $hbg.classList.add('on');
+  $hbg.classList.remove('fade');
+
+  // Type horror text into columns rapidly
+  let colIdx=0, charIdx=0, lineI=0;
+  const hTimer=setInterval(()=>{
+    if(lineI>=HORROR_LINES.length){ clearInterval(hTimer); return; }
+    const line=HORROR_LINES[lineI];
+    if(charIdx<line.length){
+      cols[colIdx].textContent+=line[charIdx];
+      charIdx++;
+    } else {
+      cols[colIdx].textContent+='\n';
+      charIdx=0; lineI++;
+      colIdx=(colIdx+1)%numCols;
+    }
+    // random flicker
+    if(Math.random()<0.12){
+      $hbg.style.opacity=String(Math.random()*0.3+0.4);
+      setTimeout(()=>{ $hbg.style.opacity='1'; }, 60);
+    }
+  }, 18);
+
+  // 2) At 1.2s: swap character image IN PLACE + flicker class (no zoom)
+  setTimeout(()=>{
+    $('charImg').src=cast[ci].scare;
+    $('charLayer').classList.add('flicker');
+    $('blackflash').classList.add('on');
+    $('stage').classList.add('shake');
+  }, 1200);
+
+  // 3) At 3s: stop flicker, keep scared look
+  setTimeout(()=>{
+    $('charLayer').classList.remove('flicker');
+    $('charLayer').classList.add('scared');
+    $('blackflash').classList.remove('on');
+    $('stage').classList.remove('shake');
+    clearInterval(hTimer);
+    // update thumbnail
+    const nd=document.querySelector(`.onode[data-ci="${ci}"] .nimg`);
+    if(nd) nd.src=cast[ci].scare;
+    clickCount[ci]=0;
+  }, 3000);
+
+  // 4) At 3.5s: fade out horror text
+  setTimeout(()=>{
+    $hbg.classList.add('fade');
+    setTimeout(()=>{ $hbg.classList.remove('on','fade'); $hbg.innerHTML=''; $hbg.style.opacity=''; }, 600);
+  }, 3500);
+
+  // 5) Revert after 10s
+  revertTimer=setTimeout(()=>{
+    scaredState[ci] = false;
+    if(cur===ci){
+      $('charImg').style.opacity='0';
+      setTimeout(()=>{
+        $('charImg').src=cast[ci].img;
+        $('charImg').style.opacity='1';
+        $('charLayer').classList.remove('scared');
+        $('bText').classList.remove('scared-text');
+      },200);
+    }
+    const nd2=document.querySelector(`.onode[data-ci="${ci}"] .nimg`);
+    if(nd2) nd2.src=cast[ci].img;
+  },10000);
+}
+
+function hideBubble(){ $('bubble').classList.remove('show'); clearInterval(typeTimer); }
+
+$('charClick').addEventListener('click', handleClick);
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') selectChar((cur+1)%8);
+  if(e.key==='ArrowLeft') selectChar((cur-1+8)%8);
+  if(e.key===' '||e.key==='Enter'){ e.preventDefault(); handleClick(); }
+});
+</script>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>

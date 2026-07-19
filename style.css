@@ -1,0 +1,161 @@
+/* ============ 무경 상영관 v6 · pure BW cinema aesthetic ============ */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Marcellus&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Special+Elite&family=Courier+Prime:wght@400;700&family=Kaushan+Script&family=Song+Myung&family=Noto+Serif+KR:wght@300;400;500;600;700&family=Nanum+Myeongjo:wght@400;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+:root{
+  --paper: #f2efe6;
+  --paper-2: #d9d5c8;
+  --paper-3: #b5b1a3;
+  --ink: #050505;
+  --ink-1: #0a0a0a;
+  --ink-2: #141414;
+  --ink-3: #222222;
+  --ink-4: #3a3a3a;
+  --ink-5: #6a6a6a;
+  --ink-6: #9c9a94;
+  --line: #f2efe6;
+  --hair: rgba(242,239,230,.08);
+  --hair-2: rgba(242,239,230,.16);
+  --hair-3: rgba(242,239,230,.28);
+  --max: 1440px;
+}
+
+*{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+
+/* ============ custom scrollbar ============ */
+html{
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-4) var(--ink-1);
+}
+::-webkit-scrollbar{ width:11px; height:11px; }
+::-webkit-scrollbar-track{
+  background:var(--ink-1);
+  border-left:1px solid var(--hair);
+}
+::-webkit-scrollbar-thumb{
+  background-color:var(--ink-4);
+  background-clip:padding-box;
+  border:3px solid var(--ink-1);
+  transition:.2s;
+}
+::-webkit-scrollbar-thumb:hover{ background-color:var(--paper-3); }
+::-webkit-scrollbar-corner{ background:var(--ink-1); }
+html{ scroll-behavior:smooth; background:var(--ink); }
+body{
+  margin:0; background:var(--ink); color:var(--paper);
+  font-family:'Noto Serif KR', 'Nanum Myeongjo', serif;
+  font-weight:400; line-height:1.7; letter-spacing:.005em; font-size:16px;
+  min-height:100vh;
+}
+/* grayscale을 body가 아닌 개별 컨테이너에 적용 (body filter는 fixed를 깨뜨림) */
+.gnav, .chwrap, .site, main, .hero, .equip-wrap, .case-grid, .gallery-wrap, .worldview-wrap{ filter:grayscale(1); -webkit-filter:grayscale(1); }
+/* 오버레이/모달은 grayscale 밖에서 렌더되도록 */
+.overlay, #chapOverlay, .lb-overlay{ filter:none; -webkit-filter:none; }
+a{ color:inherit; text-decoration:none; }
+img,svg{ display:block; max-width:100%; }
+button{ font-family:inherit; }
+
+/* subtle grain */
+body::before{
+  content:""; position:fixed; inset:0; z-index:300; pointer-events:none; opacity:.07; mix-blend-mode:overlay;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.6) 0 1px, transparent 1px 3px);
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:299; pointer-events:none; opacity:.04;
+  background-image: radial-gradient(circle, rgba(255,255,255,.5) 1px, transparent 1.5px);
+  background-size: 3px 3px;
+}
+
+/* ---------- MARQUEE NAV (theater brand) ---------- */
+.gnav{
+  position:sticky; top:0; z-index:100;
+  background:rgba(5,5,5,.94); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--hair-2);
+}
+.gnav-inner{
+  display:grid; grid-template-columns: 1fr auto 1fr; align-items:center;
+  padding:22px 44px;
+}
+.gnav .brand-l{ display:flex; gap:16px; align-items:baseline; }
+.gnav .brand-l .mark{
+  font-family:'Cinzel', serif; font-size:20px; letter-spacing:.28em; color:var(--paper); font-weight:500;
+}
+.gnav .brand-l .sub{
+  font-family:'Marcellus', serif; font-size:11px; letter-spacing:.24em; color:var(--ink-6); text-transform:uppercase;
+}
+.gnav .cnum{
+  font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.22em; color:var(--ink-6); text-transform:uppercase; text-align:center; font-weight:300;
+}
+.gnav nav{ display:flex; gap:2px; justify-content:flex-end; align-items:center; }
+.gnav nav a{
+  font-family:'Cinzel', serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--ink-6); padding:8px 16px; transition:.15s; position:relative; font-weight:500;
+}
+.gnav nav a:hover{ color:var(--paper); }
+.gnav nav a.active{ color:var(--paper); }
+.gnav nav a.active::after{ content:""; position:absolute; left:16px; right:16px; bottom:-2px; height:1px; background:var(--paper); }
+
+/* marquee dot border under nav */
+.marquee-dots{
+  height:14px; background-image: radial-gradient(circle, var(--ink-6) 1.5px, transparent 2px);
+  background-size:18px 18px; background-position:center; background-repeat:repeat-x;
+  border-bottom:1px solid var(--hair);
+}
+
+@media (max-width:960px){
+  .gnav-inner{ grid-template-columns:1fr auto; padding:14px 20px; gap:10px; }
+  .gnav .cnum{ display:none; }
+  .gnav nav{ grid-column:1 / -1; justify-content:center; flex-wrap:wrap; }
+  .gnav nav a{ padding:6px 10px; letter-spacing:.14em; font-size:10.5px; }
+  .gnav .brand-l .sub{ display:none; }
+}
+
+/* ---------- typographic primitives ---------- */
+.kicker{
+  font-family:'Cinzel', serif; font-size:11px; letter-spacing:.32em; color:var(--paper);
+  text-transform:uppercase; display:inline-flex; align-items:center; gap:14px; font-weight:500;
+}
+.kicker::before{ content:""; width:32px; height:1px; background:var(--paper); }
+
+.playfair{ font-family:'Playfair Display', 'Nanum Myeongjo', serif; font-weight:400; letter-spacing:.005em; }
+.cinzel{ font-family:'Cinzel', serif; letter-spacing:.14em; text-transform:uppercase; }
+.script{ font-family:'Kaushan Script', cursive; letter-spacing:.005em; }
+.typewriter{ font-family:'Special Elite', 'Courier Prime', monospace; letter-spacing:.02em; }
+.courier{ font-family:'Courier Prime', monospace; letter-spacing:.02em; }
+
+.rule{ height:1px; background:var(--hair); border:none; margin:44px 0; }
+
+/* ---------- footer ---------- */
+footer.site{
+  padding:44px 40px 60px; text-align:center;
+  font-family:'Marcellus', serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--ink-5); border-top:1px solid var(--hair-2); margin-top:100px;
+}
+footer.site b{ color:var(--ink-6); font-family:'Cinzel', serif; font-weight:500; }
+footer.site .dots{
+  height:12px; background-image: radial-gradient(circle, var(--ink-5) 1.5px, transparent 2px);
+  background-size:16px 16px; background-position:center; background-repeat:repeat-x;
+  margin:0 auto 24px; max-width:200px;
+}
+
+/* ---------- tags & buttons ---------- */
+.tag{
+  display:inline-block; font-family:'Cinzel', serif; font-size:10px; letter-spacing:.22em;
+  text-transform:uppercase; padding:7px 12px; border:1px solid var(--ink-6); color:var(--paper); font-weight:500;
+}
+.tag.solid{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
+.tag.dim{ color:var(--ink-6); border-color:var(--ink-6); }
+
+.btn{
+  display:inline-flex; align-items:center; gap:12px;
+  font-family:'Cinzel', serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  padding:16px 26px; border:1px solid var(--paper); color:var(--paper); background:transparent; transition:.18s; cursor:pointer; font-weight:500;
+}
+.btn:hover{ background:var(--paper); color:var(--ink); }
+.btn.solid{ background:var(--paper); color:var(--ink); }
+.btn.solid:hover{ background:transparent; color:var(--paper); }
+.btn.sm{ padding:11px 18px; font-size:10.5px; }
+
+/* redaction ▪▪▪▪ */
+.redact{ background:var(--paper); color:var(--paper); padding:0 8px; user-select:none; }
+.redact.sm{ padding:0 4px; }

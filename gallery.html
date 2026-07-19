@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stills · MUGYEONG THEATER</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .ghead{ padding:64px 44px 0; max-width:var(--max); margin:0 auto; text-align:center; }
+  @media (max-width:760px){ .ghead{ padding:44px 22px 0; } }
+  .ghead .presented{ font-family:'Cinzel',serif; font-size:11px; letter-spacing:.42em; color:var(--paper-3); text-transform:uppercase; margin-bottom:22px; }
+  .ghead h1{ font-family:'Playfair Display','Nanum Myeongjo',serif; font-weight:500; font-size:clamp(56px,8.4vw,140px); line-height:.96; margin:0; color:var(--paper); }
+  .ghead .lede{ max-width:600px; margin:32px auto 0; font-family:'Marcellus',serif; font-size:15px; line-height:1.9; color:var(--paper-2); letter-spacing:.02em; }
+
+  .filters{
+    max-width:var(--max); margin:60px auto 0; padding:0 44px;
+    display:flex; gap:0; flex-wrap:wrap; justify-content:center;
+    border-top:1px solid var(--paper); border-bottom:1px solid var(--paper);
+  }
+  @media (max-width:760px){ .filters{ padding:0 20px; } }
+  .fb{
+    font-family:'Cinzel',serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+    background:transparent; border:none; color:var(--ink-6); padding:20px 26px; cursor:pointer;
+    border-right:1px solid var(--hair-2); transition:.18s;
+  }
+  .fb:last-child{ border-right:none; }
+  .fb:hover{ color:var(--paper); }
+  .fb.active{ background:var(--paper); color:var(--ink); }
+  .fb .count{ font-family:'Playfair Display',serif; font-size:13px; margin-left:8px; color:var(--ink-5); font-weight:500; }
+  .fb.active .count{ color:var(--ink-4); }
+
+  .grid{
+    max-width:var(--max); margin:60px auto 100px; padding:0 44px;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  }
+  @media (max-width:960px){ .grid{ grid-template-columns:repeat(2,1fr); padding:0 20px; } }
+  @media (max-width:480px){ .grid{ grid-template-columns:1fr; } }
+
+  .gcell{
+    position:relative; overflow:hidden; aspect-ratio:16/10;
+    border:1px solid var(--hair-2); transition:.25s; cursor:pointer;
+    background:#0a0a0a;
+  }
+  .gcell.hide{ display:none; }
+  .gcell:hover{ border-color:var(--paper); }
+
+  .gcell img{
+    width:100%; height:100%; object-fit:cover; object-position:center top;
+    filter:grayscale(1) contrast(1.1) brightness(.85);
+    transition:filter .3s, transform .35s;
+    display:block;
+  }
+  .gcell:hover img{ filter:grayscale(.6) contrast(1.05) brightness(.95); transform:scale(1.03); }
+
+  /* overlay info on hover */
+  .gcell .ginfo{
+    position:absolute; left:0; right:0; bottom:0; padding:16px 18px;
+    background:linear-gradient(transparent, rgba(0,0,0,.85));
+    opacity:0; transition:.25s; transform:translateY(6px);
+  }
+  .gcell:hover .ginfo{ opacity:1; transform:translateY(0); }
+  .ginfo .gchar{ font-family:'Playfair Display',serif; font-size:20px; color:var(--paper); font-weight:500; }
+  .ginfo .gcode{ font-family:'Cinzel',serif; font-size:9px; letter-spacing:.24em; color:var(--paper-3); text-transform:uppercase; margin-top:4px; }
+
+  /* corner frames on hover */
+  .gcell .gcorners span{ position:absolute; width:16px; height:16px; border-color:var(--paper); pointer-events:none; z-index:1; opacity:0; transition:.2s; }
+  .gcell .gcorners .tl{ top:8px; left:8px; border-top:1px solid; border-left:1px solid; }
+  .gcell .gcorners .tr{ top:8px; right:8px; border-top:1px solid; border-right:1px solid; }
+  .gcell .gcorners .bl{ bottom:8px; left:8px; border-bottom:1px solid; border-left:1px solid; }
+  .gcell .gcorners .br{ bottom:8px; right:8px; border-bottom:1px solid; border-right:1px solid; }
+  .gcell:hover .gcorners span{ opacity:1; }
+
+  /* top label */
+  .gcell .gfig{
+    position:absolute; left:10px; top:10px;
+    font-family:'Cinzel',serif; font-size:9px; letter-spacing:.24em; color:var(--paper-3);
+    text-transform:uppercase; padding:5px 8px; background:rgba(0,0,0,.5); z-index:1;
+  }
+
+  /* lightbox */
+  .lightbox{
+    position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.94);
+    display:none; align-items:center; justify-content:center; cursor:pointer;
+    padding:40px;
+  }
+  .lightbox.on{ display:flex; }
+  .lightbox img{
+    max-width:80vw; max-height:80vh; object-fit:contain;
+    filter:grayscale(1) contrast(1.08);
+    border:1px solid rgba(242,239,230,.1);
+  }
+  .lightbox .lbclose{
+    position:fixed; top:28px; right:32px;
+    width:46px; height:46px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; z-index:501;
+    background:rgba(10,10,10,.55); backdrop-filter:blur(6px);
+    border:1px solid rgba(242,239,230,.22);
+    border-radius:50%;
+    transition:.25s;
+  }
+  .lightbox .lbclose::before{
+    content:"✕";
+    font-family:'Cinzel',serif; font-size:15px; font-weight:400;
+    color:var(--paper-2);
+    transition:.25s;
+  }
+  .lightbox .lbclose:hover{
+    border-color:var(--paper); background:rgba(10,10,10,.85);
+    transform:rotate(90deg);
+  }
+  .lightbox .lbclose:hover::before{ color:var(--paper); }
+</style>
+</head>
+<body>
+  <header class="gnav">
+    <div class="gnav-inner">
+      <div class="brand-l">
+        <a href="index.html" class="mark">MUGYEONG</a>
+        <span class="sub">Theater · 無境上映館</span>
+      </div>
+      <div class="cnum">Stills · Evidence Archive</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="case-files.html">Films</a>
+        <a href="worldview.html">World</a>
+        <a href="map.html">Map</a>
+        <a href="gallery.html" class="active">Stills</a>
+          <a href="screen.html">Screen</a>
+      </nav>
+    </div>
+    <div class="marquee-dots"></div>
+  </header>
+
+  <section class="ghead">
+    <div class="presented">◆ Evidence Archive ◆</div>
+    <h1>Stills</h1>
+    <p class="lede">현장에서 회수된 사진 · 필름 · 스케치 자료.</p>
+  </section>
+
+  <div class="filters">
+    <button class="fb active" data-cat="all">전체 <span class="count">/24</span></button>
+    <button class="fb" data-cat="sicheong">무경시청 <span class="count">/12</span></button>
+    <button class="fb" data-cat="jaenan">재난안전본부 <span class="count">/12</span></button>
+    <button class="fb" data-cat="byeongwon">무경병원 <span class="count">/—</span></button>
+    <button class="fb" data-cat="imyeon">이면수사처 <span class="count">/—</span></button>
+  </div>
+
+  <div class="grid" id="grid">
+    <!-- 백무범 -->
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-baek1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 001</div>
+      <div class="ginfo"><div class="gchar">백무범</div><div class="gcode">MG-P-001 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-baek2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 002</div>
+      <div class="ginfo"><div class="gchar">백무범</div><div class="gcode">MG-P-001 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-baek3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 003</div>
+      <div class="ginfo"><div class="gchar">백무범</div><div class="gcode">MG-P-001 · 무경시청</div></div>
+    </div>
+
+    <!-- 서지한 -->
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-jihan1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 004</div>
+      <div class="ginfo"><div class="gchar">서지한</div><div class="gcode">MG-P-007 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-jihan2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 005</div>
+      <div class="ginfo"><div class="gchar">서지한</div><div class="gcode">MG-P-007 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-jihan3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 006</div>
+      <div class="ginfo"><div class="gchar">서지한</div><div class="gcode">MG-P-007 · 무경시청</div></div>
+    </div>
+
+    <!-- 이도윤 -->
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-doyoon1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 007</div>
+      <div class="ginfo"><div class="gchar">이도윤</div><div class="gcode">MG-P-006 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-doyoon2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 008</div>
+      <div class="ginfo"><div class="gchar">이도윤</div><div class="gcode">MG-P-006 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-doyoon3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 009</div>
+      <div class="ginfo"><div class="gchar">이도윤</div><div class="gcode">MG-P-006 · 무경시청</div></div>
+    </div>
+
+    <!-- 이민혁 -->
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-minhyeok1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 010</div>
+      <div class="ginfo"><div class="gchar">이민혁</div><div class="gcode">MG-P-008 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-minhyeok2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 011</div>
+      <div class="ginfo"><div class="gchar">이민혁</div><div class="gcode">MG-P-008 · 무경시청</div></div>
+    </div>
+    <div class="gcell" data-cat="sicheong" onclick="openLB(this)">
+      <img src="images/still-minhyeok3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 012</div>
+      <div class="ginfo"><div class="gchar">이민혁</div><div class="gcode">MG-P-008 · 무경시청</div></div>
+    </div>
+
+    <!-- 오재현 · 명료 -->
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-myeongryo1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 013</div>
+      <div class="ginfo"><div class="gchar">오재현</div><div class="gcode">MG-P-005 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-myeongryo2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 014</div>
+      <div class="ginfo"><div class="gchar">오재현</div><div class="gcode">MG-P-005 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-myeongryo3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 015</div>
+      <div class="ginfo"><div class="gchar">오재현</div><div class="gcode">MG-P-005 · 재난안전본부</div></div>
+    </div>
+
+    <!-- 국장 -->
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-gukjang1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 016</div>
+      <div class="ginfo"><div class="gchar">국장</div><div class="gcode">MG-P-004 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-gukjang2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 017</div>
+      <div class="ginfo"><div class="gchar">국장</div><div class="gcode">MG-P-004 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-gukjang3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 018</div>
+      <div class="ginfo"><div class="gchar">국장</div><div class="gcode">MG-P-004 · 재난안전본부</div></div>
+    </div>
+
+    <!-- 서우주 · 소명 -->
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-somyeong1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 019</div>
+      <div class="ginfo"><div class="gchar">서우주</div><div class="gcode">MG-P-003 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-somyeong2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 020</div>
+      <div class="ginfo"><div class="gchar">서우주</div><div class="gcode">MG-P-003 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-somyeong3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 021</div>
+      <div class="ginfo"><div class="gchar">서우주</div><div class="gcode">MG-P-003 · 재난안전본부</div></div>
+    </div>
+
+    <!-- 한성진 · 유사 -->
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-yusa1.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 022</div>
+      <div class="ginfo"><div class="gchar">한성진</div><div class="gcode">MG-P-002 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-yusa2.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 023</div>
+      <div class="ginfo"><div class="gchar">한성진</div><div class="gcode">MG-P-002 · 재난안전본부</div></div>
+    </div>
+    <div class="gcell" data-cat="jaenan" onclick="openLB(this)">
+      <img src="images/still-yusa3.png" alt="" loading="lazy">
+      <div class="gcorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+      <div class="gfig">STILL · 024</div>
+      <div class="ginfo"><div class="gchar">한성진</div><div class="gcode">MG-P-002 · 재난안전본부</div></div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLB()">
+    <img id="lbImg" src="" alt="">
+    <div class="lbclose"></div>
+  </div>
+
+  <script>
+    // filter
+    document.querySelectorAll('.fb').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.fb').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        const cat = b.dataset.cat;
+        document.querySelectorAll('.gcell').forEach(c => c.classList.toggle('hide', cat !== 'all' && c.dataset.cat !== cat));
+      });
+    });
+
+    // lightbox
+    function openLB(cell) {
+      const src = cell.querySelector('img').src;
+      document.getElementById('lbImg').src = src;
+      document.getElementById('lightbox').classList.add('on');
+    }
+    function closeLB() {
+      document.getElementById('lightbox').classList.remove('on');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+  </script>
+
+  <footer class="site">
+    <div class="dots"></div>
+    <b>MUGYEONG THEATER</b> · Stills · Vol.06
+  </footer>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>

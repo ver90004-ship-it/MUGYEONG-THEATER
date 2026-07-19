@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World · MUGYEONG THEATER</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .whead{ padding:64px 44px 0; max-width:var(--max); margin:0 auto; text-align:center; }
+  @media (max-width:760px){ .whead{ padding:44px 22px 0; } }
+  .whead h1{ font-family:'Playfair Display','Nanum Myeongjo',serif; font-weight:500; font-size:clamp(56px,8vw,140px); line-height:.96; margin:0; color:var(--paper); }
+  .whead .en{ font-family:'Cinzel',serif; font-size:11px; letter-spacing:.42em; color:var(--paper-3); text-transform:uppercase; margin-top:18px; }
+  .whead .lede{ max-width:600px; margin:28px auto 0; font-family:'Marcellus',serif; font-size:15.5px; line-height:1.9; color:var(--paper-2); }
+
+  /* CHAPTER TICKET LIST */
+  .chaplist{
+    max-width:1100px; margin:70px auto 100px; padding:0 44px;
+    display:flex; flex-direction:column; gap:0;
+    border-top:1px solid var(--paper);
+  }
+  @media (max-width:760px){ .chaplist{ padding:0 22px; } }
+
+  .chaprow{
+    display:grid; grid-template-columns:100px 1fr auto; gap:0; align-items:center;
+    border-bottom:1px solid var(--hair-2);
+    cursor:pointer; transition:.2s;
+    padding:0;
+  }
+  .chaprow:hover{ background:rgba(242,239,230,.03); }
+  .chaprow .cnum{
+    padding:28px 24px; font-family:'Playfair Display',serif; font-size:38px; color:var(--ink-5); font-weight:400; line-height:1;
+    border-right:1px solid var(--hair-2);
+  }
+  .chaprow:hover .cnum{ color:var(--paper); }
+  .chaprow .cmid{ padding:26px 32px; }
+  .chaprow .ctag{ font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; margin-bottom:8px; }
+  .chaprow .ctitle{ font-family:'Playfair Display',serif; font-size:clamp(22px,3vw,34px); color:var(--paper); font-weight:500; line-height:1.1; }
+  .chaprow .csub{ font-family:'Marcellus',serif; font-size:13px; color:var(--paper-3); margin-top:8px; letter-spacing:.04em; }
+  .chaprow .carrow{
+    padding:28px 30px; font-family:'Cinzel',serif; font-size:12px; letter-spacing:.2em; color:var(--paper-3); text-transform:uppercase;
+    transition:.2s;
+  }
+  .chaprow:hover .carrow{ color:var(--paper); }
+  @media (max-width:760px){
+    .chaprow{ grid-template-columns:60px 1fr; }
+    .chaprow .cnum{ padding:20px 16px; font-size:28px; }
+    .chaprow .cmid{ padding:18px 20px; }
+    .chaprow .carrow{ display:none; }
+  }
+
+  /* CHAPTER MODAL OVERLAY */
+  .chap-overlay{
+    position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.75);
+    display:none; align-items:center; justify-content:center;
+    backdrop-filter:blur(6px);
+  }
+  .chap-overlay.on{ display:flex; }
+
+  .chap-doc{
+    position:relative; width:min(720px, 94vw); max-height:90vh; overflow-y:auto;
+    background:var(--ink-1); border:1px solid var(--paper);
+    scrollbar-width:thin; scrollbar-color:rgba(242,239,230,.2) transparent;
+  }
+
+  .doc-head{
+    padding:30px 40px 26px; border-bottom:1px solid var(--hair-2); position:sticky; top:0; z-index:2;
+    background:var(--ink-1); display:flex; justify-content:space-between; align-items:flex-start;
+  }
+  .doc-head .htag{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.32em; color:var(--paper-3); text-transform:uppercase; margin-bottom:10px; }
+  .doc-head h2{ font-family:'Playfair Display',serif; font-size:clamp(28px,4vw,44px); font-weight:500; color:var(--paper); margin:0; line-height:1.05; }
+  .doc-close{
+    font-family:'Cinzel',serif; font-size:18px; color:var(--paper-3); cursor:pointer;
+    border:1px solid var(--hair-2); padding:4px 10px; transition:.2s; flex-shrink:0; margin-left:16px; line-height:1.4;
+  }
+  .doc-close:hover{ color:var(--paper); border-color:var(--paper); }
+
+  .doc-body{ padding:36px 40px 50px; display:flex; flex-direction:column; gap:28px; }
+  @media (max-width:760px){ .doc-body{ padding:24px 24px 40px; } }
+
+  .doc-body p{ font-family:'Nanum Myeongjo',serif; font-size:16px; line-height:2.1; color:var(--paper); margin:0; }
+  .doc-body p.lede{ font-family:'Playfair Display',serif; font-size:20px; line-height:1.7; font-style:italic; color:var(--paper-2); }
+  .doc-body b{ color:var(--paper); }
+  .doc-body .redact{ background:var(--paper); color:var(--paper); padding:0 6px; user-select:none; }
+
+  .doc-section h4{
+    font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase;
+    margin:0 0 16px; padding-bottom:12px; border-bottom:1px solid var(--hair-2);
+  }
+  .doc-section p{ margin:0 0 14px; }
+  .doc-section p:last-child{ margin:0; }
+
+  .doc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--paper); }
+  @media (max-width:560px){ .doc-grid{ grid-template-columns:1fr; } }
+  .doc-grid .dg{ background:var(--ink-1); padding:20px 22px; }
+  .doc-grid .dg h5{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.24em; color:var(--paper-3); text-transform:uppercase; margin:0 0 10px; }
+  .doc-grid .dg p{ font-family:'Nanum Myeongjo',serif; font-size:14.5px; color:var(--paper); line-height:1.8; margin:0; }
+  .doc-grid .dg .badge{ display:inline-block; font-family:'Cinzel',serif; font-size:8.5px; letter-spacing:.2em; color:var(--ink); background:var(--paper); padding:3px 8px; margin-top:8px; text-transform:uppercase; }
+
+  .doc-stages{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; background:var(--paper); }
+  @media (max-width:560px){ .doc-stages{ grid-template-columns:1fr; } }
+  .doc-stages .ds{ background:var(--ink-1); padding:20px 22px; }
+  .doc-stages .ds h5{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.24em; color:var(--paper-3); text-transform:uppercase; margin:0 0 10px; }
+  .doc-stages .ds p{ font-family:'Nanum Myeongjo',serif; font-size:14px; color:var(--paper); line-height:1.75; margin:0; }
+
+  .doc-rules{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0; }
+  .doc-rules li{ display:grid; grid-template-columns:42px 1fr; gap:16px; padding:14px 0; border-bottom:1px dashed var(--hair-2); }
+  .doc-rules li:last-child{ border-bottom:none; }
+  .doc-rules .rn{ font-family:'Playfair Display',serif; font-size:26px; color:var(--ink-5); line-height:1; }
+  .doc-rules .rt{ font-family:'Nanum Myeongjo',serif; font-size:15px; color:var(--paper); line-height:1.8; }
+
+  .doc-tline .tt{ display:grid; grid-template-columns:140px 1fr; gap:20px; padding:14px 0; border-bottom:1px dotted var(--hair-2); }
+  .doc-tline .tt:last-child{ border-bottom:none; }
+  .doc-tline .y{ font-family:'Cinzel',serif; font-size:11px; color:var(--paper); letter-spacing:.14em; text-transform:uppercase; }
+  .doc-tline .d{ font-family:'Nanum Myeongjo',serif; font-size:15px; color:var(--paper); line-height:1.75; }
+
+  .doc-warn{ border:1px solid var(--paper); padding:16px 22px; font-family:'Cinzel',serif; font-size:11px; letter-spacing:.14em; color:var(--paper); text-transform:uppercase; }
+  .doc-warn::before{ content:"⚠ "; }
+</style>
+</head>
+<body>
+
+  <!-- CHAPTER MODAL -->
+  <div class="chap-overlay" id="chapOverlay" onclick="closeChap(event)">
+    <div class="chap-doc">
+      <div class="doc-head">
+        <div>
+          <div class="htag" id="docTag">MG-W-001</div>
+          <h2 id="docTitle">연표</h2>
+        </div>
+        <div class="doc-close" onclick="closeChap()">✕</div>
+      </div>
+      <div class="doc-body" id="docBody"></div>
+    </div>
+  </div>
+
+  <header class="gnav">
+    <div class="gnav-inner">
+      <div class="brand-l"><a href="index.html" class="mark">MUGYEONG</a><span class="sub">Theater · 無境上映館</span></div>
+      <div class="cnum">World · Chapter Ⅱ</div>
+      <nav>
+        <a href="index.html">Home</a><a href="case-files.html">Films</a>
+        <a href="worldview.html" class="active">World</a>
+        <a href="map.html">Map</a><a href="gallery.html">Stills</a>
+          <a href="screen.html">Screen</a>
+      </nav>
+    </div>
+    <div class="marquee-dots"></div>
+  </header>
+
+  <section class="whead">
+    <h1>세계관</h1>
+    <div class="en">◆ World Archive · MG-W · Vol.06 ◆</div>
+    <p class="lede">1976년 무경시청에서 시작된 재앙 이후, 상위 거주자·터전·규율·침식이라는 낯선 언어가 도시의 새로운 물리 법칙이 되었다.</p>
+  </section>
+
+  <div class="chaplist">
+    <div class="chaprow" onclick="openChap('timeline')">
+      <div class="cnum">01</div>
+      <div class="cmid">
+        <div class="ctag">MG-W-001 · Timeline</div>
+        <div class="ctitle">연표</div>
+        <div class="csub">1976년 7월 재앙 발생 이후의 기록</div>
+      </div>
+      <div class="carrow">열람 →</div>
+    </div>
+    <div class="chaprow" onclick="openChap('higher')">
+      <div class="cnum">02</div>
+      <div class="cmid">
+        <div class="ctag">MG-W-002 · Higher Ones</div>
+        <div class="ctitle">상위 거주자</div>
+        <div class="csub">간택 · 터전등급 · 인지오염 · 거울각인</div>
+      </div>
+      <div class="carrow">열람 →</div>
+    </div>
+    <div class="chaprow" onclick="openChap('nest')">
+      <div class="cnum">03</div>
+      <div class="cmid">
+        <div class="ctag">MG-W-003 · Nest & Rule</div>
+        <div class="ctitle">터전과 규율</div>
+        <div class="csub">규율의 발동 조건 · 위반의 대가</div>
+      </div>
+      <div class="carrow">열람 →</div>
+    </div>
+    <div class="chaprow" onclick="openChap('erosion')">
+      <div class="cnum">04</div>
+      <div class="cmid">
+        <div class="ctag">MG-W-004 · Erosion</div>
+        <div class="ctitle">침식과 변이</div>
+        <div class="csub">정신오염 → 신체변이 → 괴물화 · 대응 장비</div>
+      </div>
+      <div class="carrow">열람 →</div>
+    </div>
+    <div class="chaprow" onclick="openChap('contain')">
+      <div class="cnum">05</div>
+      <div class="cmid">
+        <div class="ctag">MG-W-005 · Containment</div>
+        <div class="ctitle">봉쇄와 은폐</div>
+        <div class="csub">재난안전본부 · 적막 프로토콜 · 제0국</div>
+      </div>
+      <div class="carrow">열람 →</div>
+    </div>
+  </div>
+
+  <footer class="site"><div class="dots"></div><b>MUGYEONG THEATER</b> · World · Vol.06</footer>
+
+<script>
+const chapters = {
+  timeline: {
+    tag: 'MG-W-001 · Timeline',
+    title: '연표',
+    body: `
+      <div class="doc-section">
+        <p class="lede">모든 것은 한 지점에서 시작되어, 지금도 확산 중이다.</p>
+      </div>
+      <div class="doc-section">
+        <div class="doc-tline">
+          <div class="tt"><div class="y">1976년 7월 초</div><div class="d">무경시청에서 원인불명의 재앙이 발생했다. 다수의 상위 거주자가 강림하였으며, 건물 전체가 터전으로 변질되었다. 시청 내 모든 민간인과의 접촉이 즉시 차단되었다.</div></div>
+          <div class="tt"><div class="y">1976년 7월</div><div class="d">착호갑사 대부분이 시청 내부에서 전멸하였다. 1차 진압 작전은 실패로 끝났다. 잔존 요원들은 이후 재난안전본부 처리반으로 편입되었다.</div></div>
+          <div class="tt"><div class="y">1976년 7월</div><div class="d">제0국 주도로 재난안전본부가 극비리에 수립되었다. 무경시 전역에 1차 봉쇄령이 내려졌으며, 민간인 긴급 철수 명령이 하달되었다. 언론에 대한 전면 통제가 시작되었다.</div></div>
+          <div class="tt"><div class="y">1976년 7월</div><div class="d">적막 프로토콜이 발동되었다. 침식 의심 개체에 대한 즉시 사살 명령이 내려졌다. 공식 기록은 은폐되었으며, 사망자 수는 기밀로 분류되었다.</div></div>
+          <div class="tt"><div class="y">이후</div><div class="d">터전화의 범위가 계속해서 확산되고 있다. 봉쇄선은 반복적으로 재편성되고 있으며, 처리반의 순환 배치가 지속되고 있다. 생존자가 산발적으로 발견되어 격리 조치 중이다.</div></div>
+          <div class="tt"><div class="y">현재</div><div class="d">무경시의 완전 봉쇄가 유지되고 있다. 재난안전본부가 운영 중이며, 무경병원에서는 격리가 진행되고 있다. 이면수사처의 존재는 공식적으로 확인되지 않았다.</div></div>
+        </div>
+      </div>
+    `
+  },
+  higher: {
+    tag: 'MG-W-002 · Higher Ones',
+    title: '상위 거주자',
+    body: `
+      <div class="doc-section">
+        <p class="lede">인간의 인지 체계로는 이해할 수 없는 초월적 존재다. 선악과 무관하며, 강림한 구역은 예외 없이 초토화된다.</p>
+        <p>직접 인식을 시도할 경우 신체와 정신이 붕괴되며 즉사급 손상을 입는다. 인간은 그들에게 재료이거나 부속품이거나 관찰 대상이거나 수집품에 불과하다. 교섭은 원칙적으로 불가능하며, 시도 자체가 간택의 계기가 될 수 있다.</p>
+      </div>
+      <div class="doc-section">
+        <h4>핵심 개념</h4>
+        <div class="doc-grid">
+          <div class="dg"><h5>간택 (수집품)</h5><p>상위 거주자가 특별한 관심을 보이는 인간을 가리킨다. 등급 격상, 처분 면제, 보호와 같은 징후가 나타난다. 그러나 변이는 의도대로 설계되며, 영혼은 영원히 고통받는다.</p><span class="badge">최고등급 · 접근 금지</span></div>
+          <div class="dg"><h5>터전 등급</h5><p>상위 거주자의 관심도와 동화 우선순위를 나타내는 수치다. 동시에 해당 구역에서의 생존 확률을 가늠하는 척도이기도 하다. 고등급일수록 공간 뒤틀림과 괴현상이 빈발하며, 최고등급 구역에서는 처분 자체가 불가능하다.</p></div>
+          <div class="dg"><h5>인지오염</h5><p>상위 거주자의 정신 간섭으로 이성과 감각이 왜곡되는 현상이다. 침식의 초기 단계에 해당하며, 정화제 앰플을 투여하면 최대 6시간까지 지연할 수 있다. 방치할 경우 신체 변이로 이행한다.</p><span class="badge">정화제 앰플 즉시 투여</span></div>
+          <div class="dg"><h5>거울 각인</h5><p>자아를 유지하기 위한 의식 훈련법이다. 인지오염에 저항하는 자아 재각인 기법으로, 처리반 요원들이 정기적으로 수행한다. 다만 고등급 터전에서는 그 효과가 제한적이다.</p></div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-warn">상위 거주자 직접 인식 금지. 간접 관측만 허용. 위반 시 즉사급 손상이 발생한다.</div>
+      </div>
+    `
+  },
+  nest: {
+    tag: 'MG-W-003 · Nest & Rule',
+    title: '터전과 규율',
+    body: `
+      <div class="doc-section">
+        <p class="lede">상위 거주자가 뿌리내린 공간을 터전이라 부른다. 그 안에서는 현실의 물리 법칙이 개체의 속성과 규율로 대체된다.</p>
+        <p>규율은 터전화 즉시 구역에 자동으로 부여되며, 명시나 선포 여부와 무관하다. 위반은 즉각 감지되고, 의도와 무관하게 예외 없이 응징이 발동된다. 규율의 내용은 터전마다 다르며, 반드시 진입 전에 파악해야 한다. 파악하지 못한 채 진입하는 것은 자살 행위에 가깝다.</p>
+      </div>
+      <div class="doc-section">
+        <h4>규율 위반 결과</h4>
+        <div class="doc-stages">
+          <div class="ds"><h5>규율 준수</h5><p>해당 터전의 규율을 정확히 따르면 생존할 수 있다. 단, 규율이 명확히 파악되지 않은 터전에서는 우연한 위반이 빈번하게 발생한다.</p></div>
+          <div class="ds"><h5>경계 이탈</h5><p>규율의 경계선을 벗어나면 인지오염이 시작된다. 정화제 앰플로 지연할 수 있으나, 터전 내에 잔류하는 한 진행이 재개된다.</p></div>
+          <div class="ds"><h5>명백한 위반</h5><p>규율을 명백히 어기면 즉각적 응징이 발동된다. 방법은 터전마다 다르며, 생환 사례가 없어 상세 내용은 파악되지 않았다.</p></div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <h4>무경시청 확인 규율 (일부)</h4>
+        <ol class="doc-rules">
+          <li><span class="rn">01</span><span class="rt">소리를 내지 마라. 발화 자체가 규율 위반으로 처리된다.</span></li>
+          <li><span class="rn">02</span><span class="rt">엘리베이터 버튼을 누르지 마라. 원하는 층이 아닌 곳으로 이동하게 된다.</span></li>
+          <li><span class="rn">03</span><span class="rt">창문을 열지 마라. 외부의 것이 들어온다.</span></li>
+          <li><span class="rn">04</span><span class="rt">혼자 남겨지지 마라. 단독 잔류자의 귀환 사례는 0건이다.</span></li>
+          <li><span class="rn">05</span><span class="rt">벽에 기대지 마라. 흡수 현상이 보고된 바 있다.</span></li>
+        </ol>
+      </div>
+    `
+  },
+  erosion: {
+    tag: 'MG-W-004 · Erosion',
+    title: '침식과 변이',
+    body: `
+      <div class="doc-section">
+        <p class="lede">침식은 정신오염에서 시작하여 신체 변이를 거쳐 괴물화로 이행한다. 변이가 완료된 순간, 영혼은 소멸한다.</p>
+      </div>
+      <div class="doc-section">
+        <h4>진행 단계</h4>
+        <div class="doc-stages">
+          <div class="ds"><h5>1단계 · 인지오염</h5><p>환청과 환각, 일시적 인식 왜곡이 나타난다. 정화제 앰플 투여로 6시간까지 지연할 수 있다. 자각 증상이 있으며, 이 단계에서 신고와 격리가 이루어지면 생존 가능성이 있다.</p></div>
+          <div class="ds"><h5>2단계 · 신체 변이</h5><p>신체 일부의 형태가 변하고, 기억이 역전되며, 타인을 인식하지 못하게 된다. 정화제의 효과가 저하된다. 범각인 은탄이 유효하다. 자각 증상은 소실된다.</p></div>
+          <div class="ds"><h5>3단계 · 완전 변이</h5><p>변이가 완료된다. 공격성이 극대화되며 의사소통이 불가능해진다. 일부는 벽이나 바닥에 융합되어 흔적 없이 소멸한다. 영혼이 소멸하며 처분 대상이 된다.</p></div>
+        </div>
+      </div>
+      <div class="doc-section">
+        <h4>공통 징후</h4>
+        <ol class="doc-rules">
+          <li><span class="rn">A</span><span class="rt">의문의 찬가를 흥얼거린다. 멜로디와 텍스트는 불명이다.</span></li>
+          <li><span class="rn">B</span><span class="rt">웃음을 섞어 구조를 요청한다.</span></li>
+          <li><span class="rn">C</span><span class="rt">관절이 비정상적으로 꺾인다. 반대 방향 굴절 사례가 보고된 바 있다.</span></li>
+          <li><span class="rn">D</span><span class="rt">홍채가 소실된다. 안구에서 검은 액체가 분비된다.</span></li>
+        </ol>
+      </div>
+      <div class="doc-section">
+        <h4>대응 장비</h4>
+        <div class="doc-grid">
+          <div class="dg"><h5>UV 랜턴</h5><p>변이자의 그림자에 자외선을 조사하면 본체가 고통을 받으며 동기화가 확인된다. 식별과 제압 목적으로 사용하며, 변이 단계 구분이 가능하다.</p></div>
+          <div class="dg"><h5>범각인 은탄 (虎)</h5><p>침식 1단계와 2단계에서만 유효하다. 3단계 이상에서는 효과가 확인되지 않았다. 탄피에 범(虎) 부적이 각인 처리되어 있다. 재고가 제한적으로 지급된다.</p></div>
+          <div class="dg"><h5>정화제 앰플</h5><p>인지오염을 차단하고 침식을 최대 6시간 지연시킨다. 절단 후 즉시 사용해야 하며, 재사용은 불가하다. 환청과 환각을 완화하는 효과가 있다. 투여 후 구역감이 동반된다.</p></div>
+          <div class="dg"><h5>거울 각인</h5><p>자아 재각인을 통해 인지오염에 저항하는 기법이다. 정기적으로 수행할 것을 권장한다. 고등급 터전에서는 효과가 제한적이며, 정신안정제와 병용 시 효과 향상이 보고되었다.</p></div>
+        </div>
+      </div>
+    `
+  },
+  contain: {
+    tag: 'MG-W-005 · Containment',
+    title: '봉쇄와 은폐',
+    body: `
+      <div class="doc-section">
+        <p class="lede">재난안전본부의 목표는 재앙의 해결이 아니다. 확산 차단, 격리, 봉쇄선 유지. 오직 이 세 가지뿐이다.</p>
+        <p>무경시 전역은 등급별로 분류되어 봉쇄선이 유지되고 있다. 민간인 접근은 완전히 차단되었으며, 언론은 제0국의 협조 아래 검열되고 있다. 봉쇄선을 침범할 경우 경고, 강제 격리, 필요 시 처리 절차가 순차적으로 발동된다.</p>
+        <p>처리반 요원의 평균 생존 기간은 <span class="redact">████████</span>이며, 이 수치는 내부 기밀로 분류되어 있다. 요원들에게는 공개되지 않는다.</p>
+      </div>
+      <div class="doc-section">
+        <h4>적막 프로토콜</h4>
+        <p>재앙 발생 직후 제0국이 발동한 최고 수준의 대응 지침이다. 침식 의심 개체의 즉시 사살, 민간인의 완전 철수, 언론의 전면 차단을 골자로 한다. 도의적 판단은 프로토콜 위반으로 간주된다.</p>
+        <div class="doc-warn">적막 프로토콜 위반 시 징계 처분 또는 침식 의심 개체로 분류될 수 있다.</div>
+      </div>
+      <div class="doc-section">
+        <h4>재난안전본부 내 침식 미확인 사유</h4>
+        <p>본부 내부에서는 일반적인 공간 침식 현상이 확인되지 않는다. 그 이유는 <span class="redact">██████████████████████████████</span>이며, 제0국 최상위 기밀로 분류되어 있다. 열람 불가.</p>
+      </div>
+    `
+  }
+};
+
+function openChap(id) {
+  const c = chapters[id];
+  document.getElementById('docTag').textContent = c.tag;
+  document.getElementById('docTitle').textContent = c.title;
+  document.getElementById('docBody').innerHTML = c.body;
+  document.getElementById('chapOverlay').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeChap(e) {
+  if (e && e.target !== document.getElementById('chapOverlay')) return;
+  document.getElementById('chapOverlay').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.getElementById('chapOverlay').classList.remove('on'); document.body.style.overflow = ''; }
+});
+</script>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>

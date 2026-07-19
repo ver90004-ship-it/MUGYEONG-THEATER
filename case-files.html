@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Films · MUGYEONG THEATER</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ============ Films head ============ */
+  .head{ padding:70px 44px 0; max-width:var(--max); margin:0 auto; text-align:center; }
+  @media (max-width:760px){ .head{ padding:48px 22px 0; } }
+  .head .presented{
+    font-family:'Cinzel', serif; font-size:11px; letter-spacing:.42em; color:var(--paper-3);
+    text-transform:uppercase; margin-bottom:22px; display:inline-flex; align-items:center; gap:14px;
+  }
+  .head .presented::before, .head .presented::after{ content:"◆"; color:var(--paper); font-size:8px; }
+  .head h1{
+    font-family:'Playfair Display', 'Nanum Myeongjo', serif; font-weight:500;
+    font-size:clamp(60px, 9vw, 140px); line-height:.98; margin:0;
+    letter-spacing:-.008em; color:var(--paper);
+  }
+  .head .en{ font-family:'Cinzel', serif; font-size:12px; letter-spacing:.42em; color:var(--paper-3); text-transform:uppercase; margin-top:22px; }
+  .head .lede{ max-width:620px; margin:34px auto 0; font-size:15.5px; line-height:1.9; color:var(--paper-2); font-family:'Marcellus', serif; letter-spacing:.02em; }
+
+  /* meta bar */
+  .marqbar{
+    max-width:var(--max); margin:60px auto 0; padding:0 44px;
+    display:grid; grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--paper); border-bottom:1px solid var(--paper);
+  }
+  @media (max-width:760px){ .marqbar{ grid-template-columns:repeat(2,1fr); padding:0 22px; } }
+  .marqbar > div{
+    padding:20px 22px; border-right:1px solid var(--hair-2); text-align:center;
+    font-family:'Cinzel', serif; font-size:10px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase;
+  }
+  .marqbar > div:last-child{ border-right:none; }
+  .marqbar > div b{ display:block; font-family:'Playfair Display', serif; font-size:22px; letter-spacing:.02em; color:var(--paper); margin-top:8px; font-weight:500; text-transform:none; }
+
+  /* ============ TICKET LINEUP ============ */
+  .lineup{
+    max-width:1220px; margin:70px auto 100px; padding:0 44px;
+    display:flex; flex-direction:column; gap:34px;
+    position:relative;
+  }
+  @media (max-width:760px){ .lineup{ padding:0 20px; gap:26px; } }
+
+  /* subtle spotlight in bg */
+  .lineup::before{
+    content:""; position:absolute; inset:-40px -40px auto -40px; height:400px; pointer-events:none; z-index:-1;
+    background: radial-gradient(ellipse at 50% 0%, rgba(242,239,230,.05), transparent 60%);
+  }
+
+  .ticketwrap{
+    position:relative;
+    text-decoration:none; color:inherit;
+    display:block;
+    transition:transform .35s cubic-bezier(.2,.7,.2,1), filter .35s;
+  }
+  .ticketwrap.link{ cursor:pointer; }
+  .ticketwrap.link:hover{ transform:translateY(-6px); }
+  .ticketwrap.link:hover .ticketimg{ box-shadow: 0 30px 80px -20px rgba(0,0,0,.7), 0 0 0 1px rgba(242,239,230,.28); }
+  .ticketwrap.link:hover .film-caption .lnk{ color:var(--paper); }
+
+  /* small caption line ABOVE ticket */
+  .film-caption{
+    display:flex; justify-content:space-between; align-items:baseline; padding:0 4px 10px;
+    font-family:'Cinzel', serif; font-size:10.5px; letter-spacing:.32em; color:var(--paper-3); text-transform:uppercase;
+  }
+  .film-caption .left{ display:flex; gap:16px; align-items:baseline; }
+  .film-caption .filmno{ font-family:'Playfair Display', serif; font-size:22px; letter-spacing:.02em; color:var(--paper); font-weight:500; text-transform:none; }
+  .film-caption .fdot{ color:var(--paper); }
+  .film-caption .lnk{ color:var(--paper-3); transition:.25s; letter-spacing:.28em; }
+
+  /* ticket image itself */
+  .ticketimg{
+    display:block; width:100%; height:auto; box-shadow: 0 20px 60px -30px rgba(0,0,0,.85);
+    transition:box-shadow .35s;
+  }
+
+  /* status pill BELOW ticket */
+  .film-stub{
+    display:flex; justify-content:space-between; align-items:center; padding:10px 4px 0;
+    font-family:'Cinzel', serif; font-size:10px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase;
+  }
+  .film-stub b{ color:var(--paper); font-weight:500; }
+
+  /* disabled ticket */
+  .ticketwrap.disabled{ pointer-events:none; }
+  .ticketwrap.disabled .ticketimg{ filter:brightness(.75); }
+  .ticketwrap.disabled .film-caption .lnk{ color:var(--ink-5); }
+
+  /* NOW SHOWING blinker */
+  .ns-pulse{ display:inline-flex; align-items:center; gap:8px; }
+  .ns-pulse::before{
+    content:""; width:8px; height:8px; border-radius:50%; background:var(--paper);
+    animation:nsPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes nsPulse{ 0%,100%{opacity:1} 50%{opacity:.25} }
+</style>
+</head>
+<body>
+  <header class="gnav">
+    <div class="gnav-inner">
+      <div class="brand-l">
+        <a href="index.html" class="mark">MUGYEONG</a>
+        <span class="sub">Theater · 無境上映館</span>
+      </div>
+      <div class="cnum">Now Showing · 04 Films</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="case-files.html" class="active">Films</a>
+        <a href="worldview.html">World</a>
+        <a href="map.html">Map</a>
+        <a href="gallery.html">Stills</a>
+          <a href="screen.html">Screen</a>
+      </nav>
+    </div>
+    <div class="marquee-dots"></div>
+  </header>
+
+  <section class="head">
+    <div class="presented">Presenting · Vol.06</div>
+    <h1>사건 파일</h1>
+    <div class="en">Now Playing Films · Screening Room</div>
+    <p class="lede">무경시 이상 현상 관련 4편의 상영작. 두 편은 현재 상영중이며, 두 편은 개봉 예정입니다.</p>
+  </section>
+
+  <div class="marqbar">
+    <div>Volume<b>Vol.06</b></div>
+    <div>Screening<b>1976</b></div>
+    <div>Films<b>04</b></div>
+    <div>Cast<b>08</b></div>
+  </div>
+
+  <!-- ============ TICKET LINEUP ============ -->
+  <div class="lineup">
+
+    <!-- FILM 001 · 무경시청 -->
+    <a class="ticketwrap link" href="case-sicheong.html" aria-label="Film 001 · 무경시청 · The Day of Calamity">
+      <div class="film-caption">
+        <div class="left">
+          <span class="filmno">Film · 001</span>
+          <span class="fdot">·</span>
+          <span>MG-C-001 · Origin</span>
+        </div>
+        <span class="lnk">Enter → Sicheong</span>
+      </div>
+      <img class="ticketimg" src="images/ticket-sicheong.png" alt="무경시청 · The Day of Calamity" loading="eager">
+      <div class="film-stub">
+        <span class="ns-pulse"><b>Now Showing</b></span>
+        <span>Rated · Ⅲ · Origin</span>
+      </div>
+    </a>
+
+    <!-- FILM 002 · 재난안전본부 -->
+    <a class="ticketwrap link" href="case-jaenan.html" aria-label="Film 002 · 재난안전본부 · Disaster Safety Headquarters">
+      <div class="film-caption">
+        <div class="left">
+          <span class="filmno">Film · 002</span>
+          <span class="fdot">·</span>
+          <span>MG-C-002 · Containment</span>
+        </div>
+        <span class="lnk">Enter → Bureau</span>
+      </div>
+      <img class="ticketimg" src="images/ticket-jaenan.png" alt="재난안전본부 · Disaster Safety Headquarters" loading="lazy">
+      <div class="film-stub">
+        <span class="ns-pulse"><b>Now Showing</b></span>
+        <span>Rated · Ⅳ · Restricted</span>
+      </div>
+    </a>
+
+    <!-- FILM 003 · 무경병원 (COMING SOON) -->
+    <div class="ticketwrap disabled" aria-label="Film 003 · 무경병원 · Coming Soon">
+      <div class="film-caption">
+        <div class="left">
+          <span class="filmno">Film · 003</span>
+          <span class="fdot">·</span>
+          <span>MG-C-003 · Ward</span>
+        </div>
+        <span class="lnk">개봉 예정 · TBA</span>
+      </div>
+      <img class="ticketimg" src="images/ticket-comingsoon.png" alt="Coming Soon · 무경병원" loading="lazy">
+      <div class="film-stub">
+        <span>◇ Coming Soon</span>
+        <span>Not Rated Yet</span>
+      </div>
+    </div>
+
+    <!-- FILM 004 · 이면수사처 (COMING SOON) -->
+    <div class="ticketwrap disabled" aria-label="Film 004 · 이면수사처 · Coming Soon">
+      <div class="film-caption">
+        <div class="left">
+          <span class="filmno">Film · 004</span>
+          <span class="fdot">·</span>
+          <span>MG-C-004 · Unrecorded</span>
+        </div>
+        <span class="lnk">개봉 예정 · TBA</span>
+      </div>
+      <img class="ticketimg" src="images/ticket-comingsoon.png" alt="Coming Soon · 이면수사처" loading="lazy">
+      <div class="film-stub">
+        <span>◇ Coming Soon</span>
+        <span>Not Rated Yet</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="site">
+    <div class="dots"></div>
+    <b>MUGYEONG THEATER</b> · Vol.06 · 픽션 세계관 아카이브
+  </footer>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>

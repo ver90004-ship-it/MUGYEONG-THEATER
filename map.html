@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map · MUGYEONG THEATER</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .hud{ padding:20px 44px 0; max-width:1500px; margin:0 auto; }
+  @media (max-width:760px){ .hud{ padding:16px 20px 0; } }
+
+  .hudtop{
+    display:grid; grid-template-columns:1fr auto 1fr; gap:20px; padding:14px 20px; margin-bottom:20px;
+    border:1px solid var(--paper); background:rgba(5,5,5,.75);
+    font-family:'Cinzel',serif; font-size:10px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; align-items:center;
+  }
+  .hudtop .cen{ font-family:'Playfair Display',serif; font-size:18px; color:var(--paper); text-align:center; font-weight:500; text-transform:none; }
+  .hudtop .l,.hudtop .r{ display:flex; gap:20px; }
+  .hudtop .r{ justify-content:flex-end; }
+  .hudtop b{ color:var(--paper); }
+  @media (max-width:760px){ .hudtop{ grid-template-columns:1fr; text-align:center; } .hudtop .l,.hudtop .r{ justify-content:center; } }
+
+  .mapgame{ display:grid; grid-template-columns:280px 1fr 280px; gap:12px; margin-bottom:20px; }
+  @media (max-width:1100px){ .mapgame{ grid-template-columns:1fr; } }
+
+  .panel{ border:1px solid var(--paper); background:rgba(5,5,5,.75); padding:20px 22px; display:flex; flex-direction:column; gap:16px; }
+  .panel .phead{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.36em; color:var(--paper); text-transform:uppercase; padding-bottom:12px; border-bottom:1px solid var(--paper); display:flex; justify-content:space-between; align-items:center; }
+  .panel .phead .pnum{ font-family:'Playfair Display',serif; font-size:14px; color:var(--paper-2); text-transform:none; }
+
+  .objlist{ display:flex; flex-direction:column; gap:12px; }
+  .obj{ display:grid; grid-template-columns:22px 1fr; gap:12px; padding:10px 0; border-bottom:1px dashed var(--hair-2); }
+  .obj:last-child{ border-bottom:none; }
+  .obj .oi{ width:16px; height:16px; border:1px solid var(--paper); position:relative; }
+  .obj.done .oi::after{ content:"×"; position:absolute; top:-7px; left:1px; color:var(--paper); font-family:'Cinzel',serif; font-size:20px; line-height:1; }
+  .obj .ot{ font-family:'Nanum Myeongjo',serif; font-size:14px; line-height:1.55; color:var(--paper); }
+  .obj .ot em{ display:block; font-style:normal; font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:.24em; color:var(--paper-3); text-transform:uppercase; margin-top:4px; }
+  .obj.done .ot{ color:var(--paper-3); text-decoration:line-through; }
+
+  /* MAP STAGE */
+  .mapstage{ position:relative; border:1px solid var(--paper); background:#0a0a0a; overflow:hidden; aspect-ratio:4/3; }
+  .mapstage svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .mapstage .mapoverlay{ position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,.5) 100%); }
+  .mapstage .maplabel{ position:absolute; top:16px; left:16px; padding:8px 14px; border:1px solid var(--paper); background:rgba(5,5,5,.7); font-family:'Cinzel',serif; font-size:11px; letter-spacing:.32em; color:var(--paper); text-transform:uppercase; pointer-events:none; }
+  .mapstage .maplabel b{ font-family:'Playfair Display',serif; font-size:15px; color:var(--paper); text-transform:none; margin-left:8px; font-weight:500; }
+  .mapstage .mapscale{ position:absolute; bottom:16px; left:16px; padding:6px 12px; border:1px solid var(--hair-3); background:rgba(5,5,5,.65); font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:.24em; color:var(--paper-2); text-transform:uppercase; pointer-events:none; }
+  .mapstage .mapcomp{ position:absolute; bottom:16px; right:16px; width:52px; height:52px; border:1px solid var(--paper); background:rgba(5,5,5,.7); display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:16px; color:var(--paper); pointer-events:none; }
+  .mapstage .warn{ position:absolute; top:16px; right:16px; padding:8px 14px; border:1px solid var(--paper); background:rgba(5,5,5,.7); font-family:'Cinzel',serif; font-size:10px; letter-spacing:.28em; color:var(--paper); text-transform:uppercase; animation:blink 2.4s infinite; pointer-events:none; }
+  @keyframes blink{ 0%,50%{opacity:1} 50.01%,60%{opacity:.3} 60.01%,100%{opacity:1} }
+
+  /* clickable map nodes */
+  .mapnode{ cursor:pointer; }
+  .mapnode rect, .mapnode circle{ transition:fill .2s; }
+  .mapnode:hover rect{ fill:rgba(242,239,230,.18); }
+  .mapnode:hover circle{ fill:rgba(242,239,230,.18); }
+  .mapnode.disabled{ cursor:default; opacity:.5; }
+  .mapnode.disabled:hover rect, .mapnode.disabled:hover circle{ fill:transparent; }
+
+  .locitem{ display:grid; grid-template-columns:32px 1fr auto; gap:12px; padding:12px 0; border-bottom:1px dashed var(--hair-2); align-items:center; }
+  .locitem:last-child{ border-bottom:none; }
+  .locitem .g{ font-family:'Playfair Display',serif; font-size:24px; color:var(--paper); text-align:center; line-height:1; font-weight:500; }
+  .locitem .lbl{ font-family:'Nanum Myeongjo',serif; font-size:14px; color:var(--paper); line-height:1.4; }
+  .locitem .lbl em{ display:block; font-style:normal; font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:.24em; color:var(--paper-3); text-transform:uppercase; margin-top:2px; }
+  .locitem .lv{ font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:.24em; color:var(--paper-2); text-transform:uppercase; }
+
+  /* ====== LOCATION CARD OVERLAY ====== */
+  .loc-overlay{
+    position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center;
+    backdrop-filter:blur(4px);
+  }
+  .loc-overlay.on{ display:flex; }
+
+  .loc-card{
+    position:relative; width:min(600px, 92vw); max-height:92vh; overflow-y:auto;
+    scrollbar-width:thin; scrollbar-color:rgba(242,239,230,.2) transparent;
+    background:var(--ink-1); border:1px solid var(--paper);
+    display:flex; flex-direction:column;
+  }
+
+  /* card header */
+  .lc-head{
+    padding:22px 28px 18px; border-bottom:1px solid var(--hair-2);
+    display:flex; justify-content:space-between; align-items:flex-start; flex-shrink:0;
+  }
+  .lc-head .lc-code{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.32em; color:var(--paper-3); text-transform:uppercase; margin-bottom:8px; }
+  .lc-head h2{ font-family:'Playfair Display',serif; font-size:clamp(26px,4vw,38px); font-weight:500; color:var(--paper); margin:0; line-height:1.05; }
+  .lc-head .lc-en{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.32em; color:var(--paper-3); text-transform:uppercase; margin-top:8px; }
+  .lc-close{
+    font-family:'Cinzel',serif; font-size:20px; color:var(--paper-3); cursor:pointer; padding:4px 8px; transition:.2s; flex-shrink:0; line-height:1;
+    border:1px solid var(--hair-2); margin-left:16px;
+  }
+  .lc-close:hover{ color:var(--paper); border-color:var(--paper); }
+
+  /* MAIN IMAGE */
+  .lc-mainimg{
+    position:relative; width:100%; aspect-ratio:16/10; overflow:hidden; flex-shrink:0;
+  }
+  .lc-mainimg img{
+    width:100%; height:100%; object-fit:cover; object-position:center;
+    filter:grayscale(1) contrast(1.08) brightness(.85);
+    transition:opacity .3s;
+    display:block;
+  }
+  .lc-mainimg .lc-imglabel{
+    position:absolute; left:14px; bottom:14px; padding:7px 12px;
+    background:rgba(5,5,5,.8); border:1px solid var(--hair-3);
+    font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:.24em; color:var(--paper); text-transform:uppercase; pointer-events:none;
+  }
+
+  /* THUMB STRIP */
+  .lc-thumbs{ display:grid; grid-template-columns:repeat(5,1fr); gap:4px; padding:4px; flex-shrink:0; background:rgba(0,0,0,.4); }
+  .lc-thumb{
+    position:relative; aspect-ratio:4/3; overflow:hidden; cursor:pointer; border:1px solid transparent; transition:.2s;
+  }
+  .lc-thumb:hover{ border-color:var(--paper-3); }
+  .lc-thumb.active{ border-color:var(--paper); }
+  .lc-thumb img{ width:100%; height:100%; object-fit:cover; filter:grayscale(1) brightness(.7); transition:filter .2s; display:block; }
+  .lc-thumb:hover img, .lc-thumb.active img{ filter:grayscale(1) brightness(.9); }
+  .lc-thumb .thlabel{ position:absolute; bottom:4px; left:4px; font-family:'Cinzel',serif; font-size:8px; letter-spacing:.14em; color:var(--paper); text-transform:uppercase; }
+
+  /* INFO BODY */
+  .lc-body{ padding:24px 28px; display:flex; flex-direction:column; gap:20px; }
+
+  .lc-meta{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+    border:1px solid var(--hair-2);
+  }
+  .lc-meta > div{ padding:14px 16px; border-right:1px solid var(--hair-2); font-family:'Cinzel',serif; font-size:9px; letter-spacing:.22em; color:var(--paper-3); text-transform:uppercase; }
+  .lc-meta > div:last-child{ border-right:none; }
+  .lc-meta b{ display:block; font-family:'Playfair Display',serif; font-size:16px; color:var(--paper); font-weight:500; letter-spacing:.02em; margin-top:6px; text-transform:none; }
+
+  .lc-section h4{ font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; margin:0 0 12px; padding-bottom:10px; border-bottom:1px solid var(--hair-2); }
+  .lc-section p{ font-family:'Nanum Myeongjo',serif; font-size:15px; line-height:1.95; color:var(--paper); margin:0 0 12px; }
+  .lc-section p:last-child{ margin:0; }
+
+  .lc-rules{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0; }
+  .lc-rules li{ display:grid; grid-template-columns:36px 1fr; gap:12px; padding:12px 0; border-bottom:1px dashed var(--hair-2); align-items:baseline; }
+  .lc-rules li:last-child{ border-bottom:none; }
+  .lc-rules .rn{ font-family:'Playfair Display',serif; font-size:22px; color:var(--ink-5); font-weight:400; line-height:1; }
+  .lc-rules .rt{ font-family:'Nanum Myeongjo',serif; font-size:14.5px; color:var(--paper); line-height:1.7; }
+
+  .lc-warn{ border:1px solid var(--paper); padding:16px 20px; font-family:'Cinzel',serif; font-size:11px; letter-spacing:.14em; color:var(--paper); text-transform:uppercase; }
+  .lc-warn::before{ content:"⚠ "; color:var(--paper); }
+
+  .redact{ background:var(--paper); color:var(--paper); padding:0 6px; user-select:none; }
+
+  /* EQUIPMENT SECTION */
+  .equip-wrap{ padding:0 44px 80px; max-width:1500px; margin:0 auto; }
+  @media (max-width:760px){ .equip-wrap{ padding:0 20px 60px; } }
+  .equip-head{ display:flex; justify-content:space-between; align-items:flex-end; padding:48px 0 22px; border-bottom:1px solid var(--paper); margin-bottom:28px; flex-wrap:wrap; gap:10px; }
+  .eh-kicker{ font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:.36em; color:var(--paper-3); text-transform:uppercase; margin-bottom:10px; }
+  .eh-title{ font-family:'Playfair Display',serif; font-size:38px; font-weight:500; color:var(--paper); line-height:1; }
+  .ehr{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; }
+  /* SLOT GRID */
+  .slots{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:40px; }
+  @media (max-width:1100px){ .slots{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:600px){ .slots{ grid-template-columns:repeat(2,1fr); } }
+  .slot{
+    position:relative; aspect-ratio:1;
+    border:1px solid var(--paper); background:rgba(5,5,5,.85);
+    padding:10px 10px 12px; display:flex; flex-direction:column; justify-content:space-between;
+    font-family:'Cinzel',serif; font-size:9px; letter-spacing:.22em; color:var(--paper-3); text-transform:uppercase;
+    overflow:hidden;
+  }
+  .slot .snum{ position:relative; z-index:1; }
+  .slot .slabel{ position:relative; z-index:1; }
+  .slot .sname{ font-family:'Playfair Display',serif; font-size:15px; color:var(--paper); letter-spacing:.02em; text-transform:none; font-weight:500; line-height:1.15; display:block; }
+  .slot .snameEn{ font-family:'Cinzel',serif; font-size:8px; letter-spacing:.22em; color:var(--paper-3); margin-top:2px; display:block; }
+  .slot-img{ position:absolute; inset:0; z-index:0; }
+  .slot-img img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; filter:grayscale(1) contrast(1.15) brightness(.55); }
+
+  .regions{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; background:var(--paper); }
+  @media (max-width:760px){ .regions{ grid-template-columns:1fr; } }
+  .rg{ padding:30px 26px; background:var(--ink-1); }
+  .rg .rgcode{ font-family:'Cinzel',serif; font-size:10px; letter-spacing:.28em; color:var(--paper-3); text-transform:uppercase; margin-bottom:14px; }
+  .rg h3{ font-family:'Playfair Display',serif; font-size:32px; margin:0; color:var(--paper); font-weight:500; }
+  .rg h3 em{ font-style:normal; font-size:15px; color:var(--paper-3); font-family:'Marcellus',serif; letter-spacing:.06em; margin-left:10px; }
+  .rg p{ margin:14px 0 0; color:var(--paper-2); font-family:'Nanum Myeongjo',serif; font-size:14.5px; line-height:1.9; }
+  .rg ul{ list-style:none; padding:0; margin:16px 0 0; }
+  .rg ul li{ padding:7px 0; border-bottom:1px dotted var(--hair-2); font-family:'Cinzel',serif; font-size:10px; letter-spacing:.14em; color:var(--paper); text-transform:uppercase; }
+
+  /* SLOTS */
+  .slots{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:40px; }
+  @media (max-width:760px){ .slots{ grid-template-columns:repeat(3,1fr); } }
+  .slot{ position:relative; aspect-ratio:1; border:1px solid var(--hair-3); background:rgba(5,5,5,.6); padding:12px 10px 10px; display:flex; flex-direction:column; justify-content:space-between; font-family:'Cinzel',serif; font-size:9px; letter-spacing:.22em; color:var(--paper-3); text-transform:uppercase; overflow:hidden; }
+  .slot.filled{ border-color:var(--paper); background:rgba(5,5,5,.85); }
+  .slot .snum{ position:relative; z-index:1; }
+  .slot .slabel{ position:relative; z-index:1; }
+  .slot .sname{ font-family:'Playfair Display',serif; font-size:15px; color:var(--paper); letter-spacing:.02em; text-transform:none; font-weight:500; line-height:1.15; display:block; }
+  .slot .snameEn{ font-family:'Cinzel',serif; font-size:8.5px; letter-spacing:.24em; color:var(--paper-3); margin-top:2px; display:block; }
+  .slot-img{ position:absolute; inset:0; z-index:0; }
+  .slot-img img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; filter:grayscale(1) contrast(1.1) brightness(.65); }
+
+  text{ font-family:'Cinzel',serif; }
+</style>
+</head>
+<body>
+  <!-- LOCATION CARD OVERLAY -->
+  <div class="loc-overlay" id="locOverlay" onclick="closeLocCard(event)">
+    <div class="loc-card" id="locCard">
+      <div class="lc-head">
+        <div>
+          <div class="lc-code" id="lcCode">MG-C-001</div>
+          <h2 id="lcTitle">무경시청</h2>
+          <div class="lc-en" id="lcEn">Mugyeong City Hall</div>
+        </div>
+        <div class="lc-close" onclick="closeLocCard()">✕</div>
+      </div>
+
+      <!-- MAIN IMAGE -->
+      <div class="lc-mainimg">
+        <img id="lcMainImg" src="" alt="">
+        <div class="lc-imglabel" id="lcImgLabel">민원실</div>
+      </div>
+
+      <!-- THUMB STRIP -->
+      <div class="lc-thumbs" id="lcThumbs"></div>
+
+      <!-- BODY -->
+      <div class="lc-body" id="lcBody"></div>
+    </div>
+  </div>
+
+  <header class="gnav">
+    <div class="gnav-inner">
+      <div class="brand-l">
+        <a href="index.html" class="mark">MUGYEONG</a>
+        <span class="sub">Theater · 無境上映館</span>
+      </div>
+      <div class="cnum">Map · Containment Overview</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="case-files.html">Films</a>
+        <a href="worldview.html">World</a>
+        <a href="map.html" class="active">Map</a>
+        <a href="gallery.html">Stills</a>
+          <a href="screen.html">Screen</a>
+      </nav>
+    </div>
+    <div class="marquee-dots"></div>
+  </header>
+
+  <div class="hud">
+    <div class="hudtop">
+      <div class="l"><span>Sector <b>MG-01</b></span><span>Zone <b>Level Ⅳ</b></span></div>
+      <div class="cen">◆ MUGYEONG CONTAINMENT MAP ◆</div>
+      <div class="r"><span>Range <b>2 km</b></span><span>Vol <b>06</b></span></div>
+    </div>
+
+    <div class="mapgame">
+      <aside class="panel">
+        <div class="phead"><span>Objectives</span><span class="pnum">04 / 04</span></div>
+        <div class="objlist">
+          <div class="obj done"><div class="oi"></div><div class="ot">봉쇄선 유지 · 통제 초소 배치<em>Checkpoint Ops</em></div></div>
+          <div class="obj done"><div class="oi"></div><div class="ot">시청 반경 2km 진입 통제<em>Cordon Enforcement</em></div></div>
+          <div class="obj"><div class="oi"></div><div class="ot">감시반 순찰 · 3인 1조<em>Patrol Rotation</em></div></div>
+          <div class="obj"><div class="oi"></div><div class="ot">봉쇄선 침범자 강제 격리<em>Intruder Isolation</em></div></div>
+        </div>
+        <div class="phead" style="margin-top:8px;"><span>Legend</span><span class="pnum">Ref</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-family:Cinzel,serif;font-size:10px;letter-spacing:.18em;color:var(--paper-2);text-transform:uppercase;">
+          <div style="display:flex;align-items:center;gap:12px;"><span style="width:16px;height:16px;background:var(--paper);flex-shrink:0;"></span>Source Zone</div>
+          <div style="display:flex;align-items:center;gap:12px;"><span style="width:16px;height:16px;border:1.5px solid var(--paper);flex-shrink:0;"></span>Facility</div>
+          <div style="display:flex;align-items:center;gap:12px;"><span style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid var(--paper);flex-shrink:0;"></span>Checkpoint</div>
+          <div style="display:flex;align-items:center;gap:12px;"><span style="width:16px;height:2px;background:var(--paper);flex-shrink:0;"></span>Cordon Line</div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:9px;color:var(--paper);"><span style="width:16px;height:16px;border:1px solid var(--paper);background:rgba(242,239,230,.12);flex-shrink:0;"></span>클릭 가능</div>
+        </div>
+      </aside>
+
+      <main class="mapstage">
+        <div class="mapoverlay"></div>
+        <svg viewBox="0 0 900 680" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0L0 0 0 40" fill="none" stroke="rgba(242,239,230,.055)" stroke-width="1"/></pattern>
+            <pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".7" fill="#1e1e1e"/></pattern>
+          </defs>
+          <rect width="900" height="680" fill="url(#dots)"/>
+          <rect width="900" height="680" fill="url(#grid)"/>
+          <rect x="24" y="24" width="852" height="632" fill="none" stroke="rgba(242,239,230,.35)" stroke-width="1"/>
+
+          <g stroke="#333" stroke-width="1.2" fill="none">
+            <path d="M40 160L860 170"/><path d="M40 340L860 350"/><path d="M40 520L860 530"/>
+            <path d="M200 40L215 640"/><path d="M460 40L470 640"/><path d="M720 40L708 640"/>
+          </g>
+          <path d="M40 440L860 450" stroke="#555" stroke-dasharray="6 3" stroke-width="1" fill="none"/>
+          <text x="48" y="436" fill="#666" font-size="9" letter-spacing="3">RAIL · 무경선</text>
+          <path d="M40 600C220 585,340 620,480 590C640 560,740 615,860 585" stroke="#444" stroke-width="3.5" fill="none" opacity=".7"/>
+          <text x="48" y="626" fill="#666" font-size="9" letter-spacing="3">무경천</text>
+
+          <!-- checkpoints -->
+          <g fill="#f2efe6">
+            <path d="M245 168l7-12 7 12z"/><path d="M513 168l7-12 7 12z"/>
+            <path d="M310 358l7-12 7 12z"/><path d="M450 358l7-12 7 12z"/>
+          </g>
+          <text x="255" y="150" fill="#aaa" font-size="9" letter-spacing="2">CP-01</text>
+          <text x="523" y="150" fill="#aaa" font-size="9" letter-spacing="2">CP-02</text>
+          <text x="320" y="340" fill="#aaa" font-size="9" letter-spacing="2">CP-03</text>
+          <text x="460" y="340" fill="#aaa" font-size="9" letter-spacing="2">CP-04</text>
+
+          <!-- SOURCE: 무경시청 (CLICKABLE) -->
+          <g class="mapnode" onclick="openLocCard('sicheong')">
+            <circle cx="380" cy="260" r="180" fill="none" stroke="#f2efe6" stroke-width=".6" opacity=".22"/>
+            <circle cx="380" cy="260" r="160" fill="none" stroke="#f2efe6" stroke-width=".8" opacity=".32"/>
+            <circle cx="380" cy="260" r="140" fill="none" stroke="#f2efe6" stroke-width="1.5" stroke-dasharray="8 5"/>
+            <circle cx="380" cy="260" r="90" fill="none" stroke="#f2efe6" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>
+            <rect x="350" y="230" width="60" height="60" fill="rgba(242,239,230,.12)" stroke="#f2efe6" stroke-width="1"/>
+            <rect x="358" y="238" width="44" height="44" fill="#f2efe6"/>
+            <text x="380" y="266" text-anchor="middle" fill="#050505" font-family="Playfair Display,serif" font-size="18" font-weight="600">市</text>
+            <text x="380" y="310" text-anchor="middle" fill="#f2efe6" font-family="Playfair Display,serif" font-size="22" font-weight="500">무경시청</text>
+            <text x="380" y="328" text-anchor="middle" fill="#aaa" font-size="10" letter-spacing="4">SOURCE · CLICK</text>
+          </g>
+
+          <!-- 재난안전본부 (CLICKABLE) -->
+          <g class="mapnode" onclick="openLocCard('jaenan')">
+            <rect x="110" y="388" width="100" height="70" fill="rgba(242,239,230,.08)" stroke="#f2efe6" stroke-width="1"/>
+            <rect x="130" y="400" width="60" height="46" fill="none" stroke="#f2efe6" stroke-width="1.4"/>
+            <text x="160" y="430" text-anchor="middle" fill="#f2efe6" font-family="Playfair Display,serif" font-size="16" font-weight="500">安</text>
+            <text x="160" y="470" text-anchor="middle" fill="#f2efe6" font-family="Playfair Display,serif" font-size="14" font-weight="500">재난안전본부</text>
+            <text x="160" y="486" text-anchor="middle" fill="#aaa" font-size="9" letter-spacing="3">CLICK</text>
+          </g>
+
+          <!-- 무경병원 (disabled) -->
+          <g class="mapnode disabled">
+            <rect x="670" y="356" width="60" height="48" fill="none" stroke="#f2efe6" stroke-width="1.4" opacity=".55"/>
+            <line x1="700" y1="366" x2="700" y2="392" stroke="#f2efe6" stroke-width="1.4" opacity=".55"/>
+            <line x1="688" y1="379" x2="712" y2="379" stroke="#f2efe6" stroke-width="1.4" opacity=".55"/>
+            <text x="700" y="424" text-anchor="middle" fill="#aaa" font-family="Playfair Display,serif" font-size="14" font-weight="500">무경병원</text>
+            <text x="700" y="440" text-anchor="middle" fill="#777" font-size="9" letter-spacing="3">COMING SOON</text>
+          </g>
+
+          <!-- 이면수사처 (disabled) -->
+          <g class="mapnode disabled">
+            <circle cx="580" cy="510" r="18" fill="none" stroke="#f2efe6" stroke-width="1.4" opacity=".55"/>
+            <text x="580" y="516" text-anchor="middle" fill="#aaa" font-family="Playfair Display,serif" font-size="16" font-weight="500">裏</text>
+            <text x="580" y="550" text-anchor="middle" fill="#aaa" font-family="Playfair Display,serif" font-size="14" font-weight="500">이면수사처</text>
+            <text x="580" y="566" text-anchor="middle" fill="#777" font-size="9" letter-spacing="3">COMING SOON</text>
+          </g>
+
+          <!-- player -->
+          <circle cx="160" cy="423" r="6" fill="#f2efe6"/>
+          <circle cx="160" cy="423" r="12" fill="none" stroke="#f2efe6" stroke-width="1" opacity=".5"/>
+          <text x="180" y="418" fill="#f2efe6" font-size="9" letter-spacing="3">YOU · Bureau HQ</text>
+        </svg>
+        <div class="maplabel">Map<b>Mugyeong · Sector 01</b></div>
+        <div class="warn">◆ Cordon Active</div>
+        <div class="mapscale">Scale · 1 : 12,000</div>
+        <div class="mapcomp">N</div>
+      </main>
+
+      <aside class="panel">
+        <div class="phead"><span>Locations</span><span class="pnum">04</span></div>
+        <div class="locitem" style="cursor:pointer;" onclick="openLocCard('sicheong')">
+          <div class="g">市</div><div class="lbl">무경시청<em>Source · 클릭 가능</em></div><div class="lv">Ⅲ</div>
+        </div>
+        <div class="locitem" style="cursor:pointer;" onclick="openLocCard('jaenan')">
+          <div class="g">安</div><div class="lbl">재난안전본부<em>Bureau · 클릭 가능</em></div><div class="lv">Ⅳ</div>
+        </div>
+        <div class="locitem">
+          <div class="g">病</div><div class="lbl">무경병원<em>Coming Soon</em></div><div class="lv">Ⅳ</div>
+        </div>
+        <div class="locitem">
+          <div class="g">裏</div><div class="lbl">이면수사처<em>Coming Soon</em></div><div class="lv">Ⅴ</div>
+        </div>
+        <div class="phead" style="margin-top:8px;"><span>Status</span><span class="pnum">Live</span></div>
+        <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:.2em;color:var(--paper-2);text-transform:uppercase;line-height:2.2;">
+          Cordon <b style="color:var(--paper);">Active</b><br>
+          Bureau <b style="color:var(--paper);">Operational</b><br>
+          Silence Protocol <b style="color:var(--paper);">Engaged</b>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- EQUIPMENT -->
+  <div class="equip-wrap">
+    <div class="equip-head">
+      <div><div class="eh-kicker">◆ Standard Issue · 지급 장비 ◆</div><div class="eh-title">Equipment Locker</div></div>
+      <div class="ehr">MG-EQ · 1976 · 06 items</div>
+    </div>
+    <div class="slots">
+      <div class="slot">
+        <span class="snum">SLOT 01</span>
+        <div class="slot-img"><img src="images/lantern.jpg" alt="랜턴" loading="lazy"></div>
+        <div class="slabel"><span class="sname">랜턴</span><span class="snameEn">Field Light</span></div>
+      </div>
+      <div class="slot">
+        <span class="snum">SLOT 02</span>
+        <div class="slot-img"><img src="images/silver-round.jpg" alt="범각인 은탄" loading="lazy"></div>
+        <div class="slabel"><span class="sname">범각인 은탄</span><span class="snameEn">虎 Silver Round</span></div>
+      </div>
+      <div class="slot">
+        <span class="snum">SLOT 03</span>
+        <div class="slot-img"><img src="images/biosuit.jpg" alt="방호복" loading="lazy"></div>
+        <div class="slabel"><span class="sname">방호복</span><span class="snameEn">Biohazard Suit</span></div>
+      </div>
+      <div class="slot">
+        <span class="snum">SLOT 04</span>
+        <div class="slot-img"><img src="images/field-manual.jpg" alt="요원 안전 수칙" loading="lazy"></div>
+        <div class="slabel"><span class="sname">요원 안전 수칙</span><span class="snameEn">Field Manual</span></div>
+      </div>
+      <div class="slot">
+        <span class="snum">SLOT 05</span>
+        <div class="slot-img"><img src="images/stabilizer.jpg" alt="정신 안정제" loading="lazy"></div>
+        <div class="slabel"><span class="sname">정신 안정제</span><span class="snameEn">Stabilizer</span></div>
+      </div>
+      <div class="slot">
+        <span class="snum">SLOT 06</span>
+        <div class="slot-img"><img src="images/purifier.jpg" alt="정화제 앰플" loading="lazy"></div>
+        <div class="slabel"><span class="sname">정화제 앰플</span><span class="snameEn">Purifier</span></div>
+      </div>
+    </div>
+
+    <div class="regions">
+      <div class="rg">
+        <div class="rgcode">Region · Level Ⅳ · 봉쇄 구역</div>
+        <h3>무경시 <em>無境市</em></h3>
+        <p>1976년 재앙의 진원지. 경계 없는 도시(無境)라는 이름처럼 내부 공간과 시간은 인간의 규칙을 따르지 않는다. 전 구역 봉쇄 중.</p>
+        <ul>
+          <li>무경시청 — Source Zone</li>
+          <li>재난안전본부 — Command</li>
+          <li>무경병원 — Ward</li>
+          <li>이면수사처 — Unrecorded</li>
+        </ul>
+      </div>
+      <div class="rg">
+        <div class="rgcode">Region · Level Ⅱ · 격리 구역</div>
+        <h3>천명시 <em>天命市</em></h3>
+        <p>무경시와 별개로 격리된 독립 도시. 재앙 이후 모든 교통·통신이 차단되었으며, 내부 상황은 본부에도 미공유.</p>
+        <ul>
+          <li>무경시와 별도 봉쇄선</li>
+          <li>제0국 직할 연구 시설</li>
+          <li>교통·통신 완전 차단</li>
+          <li>내부 상황 · 미공유</li>
+        </ul>
+      </div>
+      <div class="rg">
+        <div class="rgcode">Region · Level ■■ · UNKNOWN</div>
+        <h3>망각시 <em>忘却市 · 島</em></h3>
+        <p style="color:var(--paper-3);">해당 지역에 대한 정보는 제0국에 의해 전면 삭제되었습니다. 존재 여부 자체가 논쟁 중입니다.</p>
+        <ul>
+          <li style="color:var(--paper-3);">위치 · UNKNOWN</li>
+          <li style="color:var(--paper-3);">인구 · UNKNOWN</li>
+          <li style="color:var(--paper-3);">통제 현황 · UNKNOWN</li>
+          <li style="color:var(--paper-3);">■■■■■■■■■■</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site"><div class="dots"></div><b>MUGYEONG THEATER</b> · Map · Vol.06</footer>
+
+<script>
+const locations = {
+  sicheong: {
+    code: 'MG-C-001 · Source Zone',
+    title: '무경시청',
+    en: 'Mugyeong City Hall · 1976',
+    images: [
+      { src:'images/loc-sicheong-1.png', label:'민원봉사실' },
+      { src:'images/loc-sicheong-2.png', label:'방송실' },
+      { src:'images/loc-sicheong-3.png', label:'직원 식당' },
+      { src:'images/loc-sicheong-4.png', label:'엘리베이터' },
+      { src:'images/loc-sicheong-5.png', label:'옥상' },
+    ],
+    meta: [
+      { k:'File No.', v:'MG-C-001' },
+      { k:'Type', v:'Source Zone · 공공기관' },
+      { k:'Status', v:'영구 봉쇄' },
+    ],
+    body: `
+      <div class="lc-section">
+        <h4>개요</h4>
+        <p>1976년 7월, 원인불명의 재앙이 발생한 원점. 무경시청은 재앙 발생과 동시에 터전화되었으며, 다수의 상위 거주자가 강림한 최초 기록 지점이다. 건물 자체가 이질적인 규율 아래 재편성되어 있으며, 현재도 내부에서 무언가가 활동 중임이 확인된다.</p>
+        <p>내부에서는 복도가 무한히 반복되거나 층수가 뒤섞이는 공간 뒤틀림 현상이 보고되었다. 엘리베이터는 존재하지 않는 층으로 이동하며, 방송실에서는 원인 불명의 송출이 간헐적으로 감지된다.</p>
+      </div>
+      <div class="lc-section">
+        <h4>터전 규율 (확인된 항목)</h4>
+        <ol class="lc-rules">
+          <li><span class="rn">01</span><span class="rt">소리를 내지 마라. 발화 자체가 규율 위반으로 처리된다.</span></li>
+          <li><span class="rn">02</span><span class="rt">엘리베이터 버튼을 누르지 마라. 원하는 층이 아닌 곳으로 이동한다.</span></li>
+          <li><span class="rn">03</span><span class="rt">창문을 열지 마라. 외부의 것이 들어온다.</span></li>
+          <li><span class="rn">04</span><span class="rt">혼자 남겨지지 마라. 단독 잔류자의 귀환 사례 0건.</span></li>
+          <li><span class="rn">05</span><span class="rt">벽에 기대지 마라. 흡수 현상이 보고되었다.</span></li>
+        </ol>
+      </div>
+      <div class="lc-section">
+        <div class="lc-warn">접근 금지 — 허가 없이 봉쇄선 진입 시 적막 프로토콜 즉각 발동</div>
+      </div>
+    `
+  },
+  jaenan: {
+    code: 'MG-C-002 · Bureau Command',
+    title: '재난안전본부',
+    en: 'Disaster Safety Headquarters · Classified',
+    images: [
+      { src:'images/loc-jaenan-1.png', label:'처리반 대기실' },
+      { src:'images/loc-jaenan-2.png', label:'관찰실' },
+      { src:'images/loc-jaenan-3.png', label:'면담실' },
+      { src:'images/loc-jaenan-4.png', label:'무기창고' },
+      { src:'images/loc-jaenan-5.png', label:'사무실' },
+    ],
+    meta: [
+      { k:'File No.', v:'MG-C-002' },
+      { k:'Founded', v:'1976 · 제0국 직속' },
+      { k:'Status', v:'운영 중' },
+    ],
+    body: `
+      <div class="lc-section">
+        <h4>개요</h4>
+        <p>1976년 7월 재앙 직후 제0국이 극비 수립한 현장 대응 기관. 목표는 해결이 아니다. 확산 차단, 격리, 봉쇄선 유지 — 오직 이 세 가지뿐이다. 본부 내부에서는 침식 현상이 확인되지 않으며, 그 이유는 제0국 최상위 기밀로 분류되어 있다.</p>
+        <p>처리반은 착호갑사 잔존 요원 및 선발 인원으로 구성되며, 주기적으로 정신안정제를 투여받는다. 모든 요원은 투입 전 안전수칙 9개 항목을 반드시 숙지해야 한다.</p>
+      </div>
+      <div class="lc-section">
+        <h4>요원 안전 수칙</h4>
+        <ol class="lc-rules">
+          <li><span class="rn">01</span><span class="rt">각 요원은 반드시 상호 직급 또는 요원명으로 호명한다.</span></li>
+          <li><span class="rn">02</span><span class="rt">상위 거주자 직접 인식 금지 · 간접 관측만 허용.</span></li>
+          <li><span class="rn">03</span><span class="rt">터전 내 규율 숙지 후 진입 · 미숙지 시 진입 금지.</span></li>
+          <li><span class="rn">04</span><span class="rt">정신안정제 투약 일정 준수 · 임의 중단 금지.</span></li>
+          <li><span class="rn">05</span><span class="rt">단독 행동 금지 · 2인 1조 또는 3인 1조 원칙.</span></li>
+          <li><span class="rn">06</span><span class="rt">침식 징후 발생 시 즉시 자진 신고 및 격리.</span></li>
+          <li><span class="rn">07</span><span class="rt">요원 정신건강 평가 주 1회 의무.</span></li>
+          <li><span class="rn">08</span><span class="rt">사망 요원 유품 처리 · 기록반 등록 후 폐기.</span></li>
+          <li><span class="rn">09</span><span class="rt">표본 보관실 입출고 이중 승인제. 단독 접근 금지.</span></li>
+        </ol>
+      </div>
+      <div class="lc-section">
+        <div class="lc-warn">본부 내 침식 미확인 사유 — 제0국 최상위 기밀 · 열람 불가</div>
+      </div>
+    `
+  }
+};
+
+let currentLoc = null;
+let currentImgIdx = 0;
+
+function openLocCard(id) {
+  const loc = locations[id];
+  if (!loc) return;
+  currentLoc = id;
+  currentImgIdx = 0;
+
+  document.getElementById('lcCode').textContent = loc.code;
+  document.getElementById('lcTitle').textContent = loc.title;
+  document.getElementById('lcEn').textContent = loc.en;
+  document.getElementById('lcBody').innerHTML = `
+    <div class="lc-meta">
+      ${loc.meta.map(m=>`<div>${m.k}<b>${m.v}</b></div>`).join('')}
+    </div>
+    ${loc.body}
+  `;
+
+  // Build thumbs
+  const thumbs = document.getElementById('lcThumbs');
+  thumbs.innerHTML = loc.images.map((img,i)=>`
+    <div class="lc-thumb${i===0?' active':''}" onclick="setLocImg(${i})">
+      <img src="${img.src}" alt="${img.label}" loading="lazy">
+      <span class="thlabel">${img.label}</span>
+    </div>`).join('');
+
+  setLocImg(0);
+  document.getElementById('locOverlay').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function setLocImg(i) {
+  const loc = locations[currentLoc];
+  currentImgIdx = i;
+  const mainImg = document.getElementById('lcMainImg');
+  mainImg.style.opacity = '0';
+  setTimeout(()=>{
+    mainImg.src = loc.images[i].src;
+    document.getElementById('lcImgLabel').textContent = loc.images[i].label;
+    mainImg.style.opacity = '1';
+  }, 150);
+  document.querySelectorAll('.lc-thumb').forEach((t,idx)=>t.classList.toggle('active', idx===i));
+}
+
+function closeLocCard(e) {
+  if (e && e.target !== document.getElementById('locOverlay')) return;
+  document.getElementById('locOverlay').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') { document.getElementById('locOverlay').classList.remove('on'); document.body.style.overflow=''; } });
+</script>
+<!-- MUSIC PLAYER -->
+<style>
+.mp-wrap{
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  font-family:'Cinzel', serif;
+}
+.mp-toggle{
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(10,10,10,.88); backdrop-filter:blur(8px);
+  border:1px solid rgba(242,239,230,.2);
+  color:var(--paper,#f2efe6); font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.5); transition:.2s;
+}
+.mp-toggle:hover{ border-color:rgba(242,239,230,.5); transform:scale(1.06); }
+.mp-toggle.playing{ animation:mp-pulse 2s infinite; }
+@keyframes mp-pulse{
+  0%,100%{ box-shadow:0 2px 14px rgba(0,0,0,.5); }
+  50%{ box-shadow:0 0 20px rgba(242,239,230,.15); }
+}
+
+.mp-panel{
+  position:absolute; bottom:56px; right:0; width:260px;
+  background:rgba(10,10,10,.94); backdrop-filter:blur(12px);
+  border:1px solid rgba(242,239,230,.12);
+  box-shadow:0 4px 30px rgba(0,0,0,.6);
+  padding:0; display:none; flex-direction:column;
+}
+.mp-panel.open{ display:flex; }
+
+.mp-header{
+  padding:14px 16px 10px; border-bottom:1px solid rgba(242,239,230,.08);
+  font-size:9px; letter-spacing:.3em; color:rgba(242,239,230,.4);
+  text-transform:uppercase;
+}
+
+.mp-tracks{ max-height:180px; overflow-y:auto; }
+.mp-track{
+  padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(242,239,230,.04); transition:.1s;
+  font-size:12px; color:rgba(242,239,230,.6); letter-spacing:.05em;
+}
+.mp-track:hover{ background:rgba(242,239,230,.05); color:rgba(242,239,230,.9); }
+.mp-track.active{ color:rgba(242,239,230,1); background:rgba(242,239,230,.08); }
+.mp-track .t-icon{ font-size:10px; width:14px; text-align:center; flex-shrink:0; }
+.mp-track .t-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.mp-controls{
+  padding:12px 16px; border-top:1px solid rgba(242,239,230,.08);
+  display:flex; align-items:center; gap:10px;
+}
+.mp-btn{
+  background:none; border:none; color:rgba(242,239,230,.7); cursor:pointer;
+  font-size:16px; padding:4px; transition:.15s; display:flex; align-items:center; justify-content:center;
+}
+.mp-btn:hover{ color:rgba(242,239,230,1); }
+.mp-btn.active{ color:rgba(242,239,230,1); }
+
+.mp-vol{
+  width:60px; flex-shrink:0; -webkit-appearance:none; appearance:none; height:3px;
+  background:rgba(242,239,230,.15); outline:none; border-radius:2px; cursor:pointer;
+}
+.mp-vol::-webkit-slider-thumb{
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+.mp-vol::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; border:none;
+  background:rgba(242,239,230,.8); cursor:pointer;
+}
+
+.mp-progress{
+  padding:0 16px 12px; display:flex; align-items:center; gap:8px;
+}
+.mp-pbar{
+  flex:1; -webkit-appearance:none; appearance:none; height:2px;
+  background:rgba(242,239,230,.1); outline:none; border-radius:1px; cursor:pointer;
+}
+.mp-pbar::-webkit-slider-thumb{
+  -webkit-appearance:none; width:8px; height:8px; border-radius:50%;
+  background:rgba(242,239,230,.6); cursor:pointer;
+}
+.mp-time{
+  font-size:9px; color:rgba(242,239,230,.35); letter-spacing:.05em; min-width:32px;
+}
+
+@media(max-width:600px){
+  .mp-wrap{ bottom:16px; right:12px; }
+  .mp-panel{ width:240px; }
+}
+</style>
+
+<div class="mp-wrap">
+  <div class="mp-panel" id="mpPanel">
+    <div class="mp-header">♫ &nbsp; Mugyeong OST</div>
+    <div class="mp-tracks" id="mpTracks"></div>
+    <div class="mp-progress">
+      <span class="mp-time" id="mpCur">0:00</span>
+      <input type="range" class="mp-pbar" id="mpPbar" min="0" max="100" value="0">
+      <span class="mp-time" id="mpDur">0:00</span>
+    </div>
+    <div class="mp-controls">
+      <button class="mp-btn" id="mpPrev" title="이전">⏮</button>
+      <button class="mp-btn" id="mpPlay" title="재생">▶</button>
+      <button class="mp-btn" id="mpNext" title="다음">⏭</button>
+      <button class="mp-btn" id="mpLoop" title="반복" style="font-size:13px;letter-spacing:0;">∞</button>
+      <span style="font-size:12px;color:rgba(242,239,230,.35);margin-left:auto;">♪</span>
+      <input type="range" class="mp-vol" id="mpVol" min="0" max="100" value="70">
+    </div>
+  </div>
+  <button class="mp-toggle" id="mpToggle" title="음악 플레이어">♫</button>
+</div>
+
+<script>
+(function(){
+  var tracks = [
+    { name:'Still Waiting', src:'audio/Still_Waiting.mp3' },
+    { name:'생존의 소명', src:'audio/생존의_소명.mp3' },
+    { name:'무경시 안내문', src:'audio/무경시_안내문.mp3' },
+  ];
+
+  // localStorage에서 상태 복원
+  var saved = JSON.parse(localStorage.getItem('mgPlayer') || 'null');
+  var cur = saved ? saved.cur : 0;
+  var loop = saved ? saved.loop : false;
+  var vol = saved ? saved.vol : 70;
+  var wasPlaying = saved ? saved.playing : false;
+  var savedTime = saved ? saved.time : 0;
+
+  var audio = new Audio();
+  audio.volume = vol / 100;
+  audio.loop = loop;
+
+  var panel = document.getElementById('mpPanel');
+  var toggle = document.getElementById('mpToggle');
+  var playBtn = document.getElementById('mpPlay');
+  var loopBtn = document.getElementById('mpLoop');
+  var volSlider = document.getElementById('mpVol');
+  var pbar = document.getElementById('mpPbar');
+  var curTime = document.getElementById('mpCur');
+  var durTime = document.getElementById('mpDur');
+  var tracksEl = document.getElementById('mpTracks');
+
+  volSlider.value = vol;
+  if(loop) loopBtn.classList.add('active');
+
+  function saveState(){
+    localStorage.setItem('mgPlayer', JSON.stringify({
+      cur: cur, loop: loop, vol: Math.round(audio.volume*100),
+      playing: !audio.paused, time: audio.currentTime
+    }));
+  }
+
+  function renderTracks(){
+    tracksEl.innerHTML = '';
+    tracks.forEach(function(t,i){
+      var d = document.createElement('div');
+      d.className = 'mp-track' + (i===cur?' active':'');
+      d.innerHTML = '<span class="t-icon">'+(i===cur&&!audio.paused?'▶':'♪')+'</span><span class="t-name">'+t.name+'</span>';
+      d.onclick = function(){ cur=i; savedTime=0; loadAndPlay(); };
+      tracksEl.appendChild(d);
+    });
+  }
+
+  function loadAndPlay(startTime){
+    audio.src = tracks[cur].src;
+    audio.onloadedmetadata = function(){
+      if(startTime) audio.currentTime = startTime;
+      audio.play();
+      playBtn.textContent = '⏸';
+      toggle.classList.add('playing');
+      renderTracks();
+      saveState();
+    };
+  }
+
+  function fmt(s){
+    if(isNaN(s)) return '0:00';
+    var m=Math.floor(s/60), ss=Math.floor(s%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+
+  toggle.onclick = function(){ panel.classList.toggle('open'); };
+
+  playBtn.onclick = function(){
+    if(!audio.src){ loadAndPlay(); return; }
+    if(audio.paused){ audio.play(); playBtn.textContent='⏸'; toggle.classList.add('playing'); }
+    else{ audio.pause(); playBtn.textContent='▶'; toggle.classList.remove('playing'); }
+    renderTracks(); saveState();
+  };
+
+  document.getElementById('mpPrev').onclick = function(){
+    cur = (cur-1+tracks.length)%tracks.length; savedTime=0; loadAndPlay();
+  };
+  document.getElementById('mpNext').onclick = function(){
+    cur = (cur+1)%tracks.length; savedTime=0; loadAndPlay();
+  };
+
+  loopBtn.onclick = function(){
+    loop = !loop; audio.loop = loop;
+    loopBtn.classList.toggle('active', loop); saveState();
+  };
+
+  volSlider.oninput = function(){ audio.volume = this.value/100; saveState(); };
+
+  audio.ontimeupdate = function(){
+    curTime.textContent = fmt(audio.currentTime);
+    durTime.textContent = fmt(audio.duration);
+    if(audio.duration) pbar.value = (audio.currentTime/audio.duration)*100;
+    saveState();
+  };
+
+  pbar.oninput = function(){
+    if(audio.duration) audio.currentTime = (this.value/100)*audio.duration;
+  };
+
+  audio.onended = function(){
+    if(!loop){ cur=(cur+1)%tracks.length; savedTime=0; loadAndPlay(); }
+  };
+
+  // 페이지 떠날 때 상태 저장
+  window.addEventListener('beforeunload', saveState);
+
+  // 이전 재생 상태 복원
+  if(wasPlaying){
+    loadAndPlay(savedTime);
+  } else if(saved){
+    audio.src = tracks[cur].src;
+    renderTracks();
+  } else {
+    renderTracks();
+  }
+})();
+</script>
+
+</body>
+</html>
